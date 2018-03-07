@@ -22,6 +22,7 @@
 // THE SOFTWARE.
 
 #import <UIKit/UIKit.h>
+#import <AVFoundation/AVFoundation.h>
 #import "ZFPlayerControlView.h"
 #import "ZFPlayerModel.h"
 #import "ZFPlayerControlViewDelegate.h"
@@ -83,6 +84,9 @@ typedef NS_ENUM(NSInteger, ZFPlayerState) {
 @property (nonatomic, assign) BOOL                    forcePortrait;
 /// 播放时候默认自动全屏
 @property (nonatomic, assign) BOOL                    fullScreenPlay;
+
+
+@property (nonatomic, strong) AVPlayer               *player;
 
 /**
  *  单例，用于列表cell上多个视频

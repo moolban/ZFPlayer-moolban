@@ -22,7 +22,6 @@
 // THE SOFTWARE.
 
 #import "ZFPlayerView.h"
-#import <AVFoundation/AVFoundation.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import "UIView+CustomControlView.h"
 #import "ZFPlayer.h"
@@ -42,7 +41,6 @@ typedef NS_ENUM(NSInteger, PanDirection){
 @interface ZFPlayerView () <UIGestureRecognizerDelegate,UIAlertViewDelegate>
 
 /** 播放属性 */
-@property (nonatomic, strong) AVPlayer               *player;
 @property (nonatomic, strong) AVPlayerItem           *playerItem;
 @property (nonatomic, strong) AVURLAsset             *urlAsset;
 @property (nonatomic, strong) AVAssetImageGenerator  *imageGenerator;
