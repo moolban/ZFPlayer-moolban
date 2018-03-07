@@ -22,6 +22,7 @@
 // THE SOFTWARE.
 
 #import "ZFPlayerView.h"
+
 #import <MediaPlayer/MediaPlayer.h>
 #import "UIView+CustomControlView.h"
 #import "ZFPlayer.h"
@@ -41,6 +42,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
 @interface ZFPlayerView () <UIGestureRecognizerDelegate,UIAlertViewDelegate>
 
 /** 播放属性 */
+@property (nonatomic, strong) AVPlayer               *player;
 @property (nonatomic, strong) AVPlayerItem           *playerItem;
 @property (nonatomic, strong) AVURLAsset             *urlAsset;
 @property (nonatomic, strong) AVAssetImageGenerator  *imageGenerator;
@@ -185,10 +187,10 @@ typedef NS_ENUM(NSInteger, PanDirection){
     
     // 监测设备方向
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(onDeviceOrientationChange)
-                                                 name:UIDeviceOrientationDidChangeNotification
-                                               object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(onDeviceOrientationChange)
+//                                                 name:UIDeviceOrientationDidChangeNotification
+//                                               object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(onStatusBarOrientationChange)

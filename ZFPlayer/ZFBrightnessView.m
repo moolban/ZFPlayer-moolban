@@ -66,7 +66,7 @@
         self.title.font          = [UIFont boldSystemFontOfSize:16];
         self.title.textColor     = [UIColor colorWithRed:0.25f green:0.22f blue:0.21f alpha:1.00f];
         self.title.textAlignment = NSTextAlignmentCenter;
-        self.title.text          = @"亮度";
+        self.title.text          = @"밝기";
         [self addSubview:self.title];
 		
         self.longView         = [[UIView alloc]initWithFrame:CGRectMake(13, 132, self.bounds.size.width - 26, 7)];

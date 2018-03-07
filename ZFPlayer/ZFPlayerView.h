@@ -86,8 +86,6 @@ typedef NS_ENUM(NSInteger, ZFPlayerState) {
 @property (nonatomic, assign) BOOL                    fullScreenPlay;
 
 
-@property (nonatomic, strong) AVPlayer               *player;
-
 /**
  *  单例，用于列表cell上多个视频
  *
