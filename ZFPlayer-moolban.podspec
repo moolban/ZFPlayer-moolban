@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = 'ZFPlayer-moolban'
-    s.version      = '2.1.6.2'
+    s.version      = '2.1.6.3'
     s.summary      = 'A good player made by renzifeng'
     s.homepage     = 'https://github.com/rws08/ZFPlayer'
     s.license      = 'MIT'

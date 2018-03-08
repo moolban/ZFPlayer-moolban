@@ -406,28 +406,34 @@ typedef NS_ENUM(NSInteger, PanDirection){
 }
 
 /**
- *  创建手势
+ *  Create a gesture
  */
 - (void)createGesture {
-    // 单击
-    self.singleTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(singleTapAction:)];
-    self.singleTap.delegate                = self;
-    self.singleTap.numberOfTouchesRequired = 1; //手指数
-    self.singleTap.numberOfTapsRequired    = 1;
-    [self addGestureRecognizer:self.singleTap];
+    if (!self.disableTabGesture) {
+        // Click
+        self.singleTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(singleTapAction:)];
+        self.singleTap.delegate                = self;
+        self.singleTap.numberOfTouchesRequired = 1; //手指数
+        self.singleTap.numberOfTapsRequired    = 1;
+        [self addGestureRecognizer:self.singleTap];
+        
+        [self.singleTap setDelaysTouchesBegan:YES];
+    }
     
-    // 双击(播放/暂停)
-    self.doubleTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(doubleTapAction:)];
-    self.doubleTap.delegate                = self;
-    self.doubleTap.numberOfTouchesRequired = 1; //手指数
-    self.doubleTap.numberOfTapsRequired    = 2;
-    [self addGestureRecognizer:self.doubleTap];
-
-    // 解决点击当前view时候响应其他控件事件
-    [self.singleTap setDelaysTouchesBegan:YES];
-    [self.doubleTap setDelaysTouchesBegan:YES];
-    // 双击失败响应单击事件
-    [self.singleTap requireGestureRecognizerToFail:self.doubleTap];
+    if (!self.disableDoubleTabGesture) {
+        // Double-click (play / pause)
+        self.doubleTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(doubleTapAction:)];
+        self.doubleTap.delegate                = self;
+        self.doubleTap.numberOfTouchesRequired = 1; //手指数
+        self.doubleTap.numberOfTapsRequired    = 2;
+        [self addGestureRecognizer:self.doubleTap];
+        
+        [self.doubleTap setDelaysTouchesBegan:YES];
+    }
+    
+    if (self.singleTap != nil && self.doubleTap != nil) {
+        [self.singleTap requireGestureRecognizerToFail:self.doubleTap];
+    }
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
