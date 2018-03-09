@@ -28,7 +28,7 @@
 - (void)colorDidUpdate:(UIColor *)opaqueColor;
 @end
 
-@interface ASValuePopUpView : UIView
+@interface ASValuePopUpView : UIView <CAAnimationDelegate>
 
 @property (weak, nonatomic) id <ASValuePopUpViewDelegate> delegate;
 @property (nonatomic) CGFloat cornerRadius;
@@ -52,6 +52,6 @@
 - (void)animateBlock:(void (^)(CFTimeInterval duration))block;
 
 - (void)showAnimated:(BOOL)animated;
-- (void)hideAnimated:(BOOL)animated completionBlock:(void (^)())block;
+- (void)hideAnimated:(BOOL)animated completionBlock:(void (^)(void))block;
 
 @end
