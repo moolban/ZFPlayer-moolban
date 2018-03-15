@@ -50,7 +50,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
 @property (nonatomic, strong) AVPlayerLayer          *playerLayer;
 @property (nonatomic, strong) id                     timeObserve;
 /** 滑杆 */
-@property (nonatomic, strong) UISlider               *volumeViewSlider; 
+@property (nonatomic, strong) UISlider               *volumeViewSlider;
 /** 用来保存快进的总时长 */
 @property (nonatomic, assign) CGFloat                sumTime;
 /** 定义一个实例变量，保存枚举值 */
@@ -187,10 +187,10 @@ typedef NS_ENUM(NSInteger, PanDirection){
     
     // 监测设备方向
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-//    [[NSNotificationCenter defaultCenter] addObserver:self
-//                                             selector:@selector(onDeviceOrientationChange)
-//                                                 name:UIDeviceOrientationDidChangeNotification
-//                                               object:nil];
+    //    [[NSNotificationCenter defaultCenter] addObserver:self
+    //                                             selector:@selector(onDeviceOrientationChange)
+    //                                                 name:UIDeviceOrientationDidChangeNotification
+    //                                               object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(onStatusBarOrientationChange)
@@ -245,6 +245,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
 - (void)autoPlayTheVideo {
     // 设置Player相关参数
     [self configZFPlayer];
+    [self play];
 }
 
 /**
@@ -314,6 +315,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
     [self resetPlayer];
     self.playerModel = playerModel;
     [self configZFPlayer];
+    [self play];
 }
 
 /**
@@ -401,7 +403,6 @@ typedef NS_ENUM(NSInteger, PanDirection){
         [self.controlView zf_playerDownloadBtnState:YES];
     }
     // 开始播放
-    [self play];
     self.isPauseByUser = NO;
 }
 
@@ -514,7 +515,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
 
 /**
  兼容iPhoneX的NavBaf顶部高度 （statusHeight）
-
+ 
  @return iPhoneX：44 other:20
  */
 + (CGFloat )getNavBarTopHeight {
@@ -641,7 +642,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
         return;
     }
     [[UIApplication sharedApplication].keyWindow addSubview:self];
-
+    
     if (CGPointEqualToPoint(self.shrinkRightBottomPoint, CGPointZero)) { // 没有初始值
         self.shrinkRightBottomPoint = CGPointMake(10, self.scrollView.contentInset.bottom+10);
     } else {
@@ -739,7 +740,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
     else {
         [[UIApplication sharedApplication] setStatusBarOrientation:orientation animated:NO];
     }
-
+    
     // 获取旋转状态条需要的时间:
     [UIView beginAnimations:nil context:nil];
     [UIView setAnimationDuration:0.3];
@@ -847,7 +848,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
                 if ([self.scrollView isKindOfClass:[UITableView class]]) {
                     UITableView *tableView = (UITableView *)self.scrollView;
                     [tableView scrollToRowAtIndexPath:self.indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
-
+                    
                 } else if ([self.scrollView isKindOfClass:[UICollectionView class]]) {
                     UICollectionView *collectionView = (UICollectionView *)self.scrollView;
                     [collectionView scrollToItemAtIndexPath:self.indexPath atScrollPosition:UICollectionViewScrollPositionTop animated:NO];
@@ -940,7 +941,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
         // 如果执行了play还是没有播放则说明还没有缓存好，则再次缓存一段时间
         isBuffering = NO;
         if (!self.playerItem.isPlaybackLikelyToKeepUp) { [self bufferingSomeSecond]; }
-       
+        
     });
 }
 
@@ -969,8 +970,8 @@ typedef NS_ENUM(NSInteger, PanDirection){
  */
 - (void)singleTapAction:(UIGestureRecognizer *)gesture {
     if ([gesture isKindOfClass:[NSNumber class]] && ![(id)gesture boolValue]) {
-         [self _fullScreenAction];
-         return;
+        [self _fullScreenAction];
+        return;
     }
     if (gesture.state == UIGestureRecognizerStateRecognized) {
         if (self.isBottomVideo && !self.isFullScreen) { [self _fullScreenAction]; }
@@ -997,6 +998,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
     if (!self.isAutoPlay) {
         self.isAutoPlay = YES;
         [self configZFPlayer];
+        [self play];
     }
 }
 
@@ -1020,12 +1022,12 @@ typedef NS_ENUM(NSInteger, PanDirection){
         } else if (point.y > ScreenHeight - height/2) {
             point.y = ScreenHeight - height/2 - distance;
         }
-
+        
         [UIView animateWithDuration:0.5 animations:^{
             view.center = point;
             self.shrinkRightBottomPoint = CGPointMake(ScreenWidth - view.frame.origin.x - width, ScreenHeight - view.frame.origin.y - height);
         }];
-    
+        
     } else {
         view.center = point;
         self.shrinkRightBottomPoint = CGPointMake(ScreenWidth - view.frame.origin.x- view.frame.size.width, ScreenHeight - view.frame.origin.y-view.frame.size.height);
@@ -1276,11 +1278,11 @@ typedef NS_ENUM(NSInteger, PanDirection){
     if ([touch.view isKindOfClass:[UISlider class]]) {
         return NO;
     }
-
+    
     return YES;
 }
 
-#pragma mark - Setter 
+#pragma mark - Setter
 
 /**
  *  videoURL的setter方法
@@ -1339,7 +1341,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
  */
 - (void)setPlayerItem:(AVPlayerItem *)playerItem {
     if (_playerItem == playerItem) {return;}
-
+    
     if (_playerItem) {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:_playerItem];
         [_playerItem removeObserver:self forKeyPath:@"status"];
@@ -1362,7 +1364,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
 /**
  *  根据tableview的值来添加、移除观察者
  *
- *  @param tableView tableView 
+ *  @param tableView tableView
  */
 - (void)setScrollView:(UIScrollView *)scrollView {
     if (_scrollView == scrollView) { return; }
@@ -1423,14 +1425,14 @@ typedef NS_ENUM(NSInteger, PanDirection){
 
 - (void)setPlayerModel:(ZFPlayerModel *)playerModel {
     _playerModel = playerModel;
-
+    
     if (playerModel.seekTime) { self.seekTime = playerModel.seekTime; }
     [self.controlView zf_playerModel:playerModel];
     // 分辨率
     if (playerModel.resolutionDic) {
-       self.resolutionDic = playerModel.resolutionDic;
+        self.resolutionDic = playerModel.resolutionDic;
     }
-
+    
     if (playerModel.scrollView && playerModel.indexPath && playerModel.videoURL) {
         NSCAssert(playerModel.fatherViewTag, @"请指定playerViews所在的faterViewTag");
         [self cellVideoWithScrollView:playerModel.scrollView AtIndexPath:playerModel.indexPath];
@@ -1516,6 +1518,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
     if (!self.isAutoPlay) {
         self.isAutoPlay = YES;
         [self configZFPlayer];
+        [self play];
     }
 }
 
@@ -1556,6 +1559,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
 
 - (void)zf_controlView:(UIView *)controlView cneterPlayAction:(UIButton *)sender {
     [self configZFPlayer];
+    [self play];
 }
 
 - (void)zf_controlView:(UIView *)controlView repeatPlayAction:(UIButton *)sender {
@@ -1573,7 +1577,8 @@ typedef NS_ENUM(NSInteger, PanDirection){
 
 /** 加载失败按钮事件 */
 - (void)zf_controlView:(UIView *)controlView failAction:(UIButton *)sender {
-     [self configZFPlayer];
+    [self configZFPlayer];
+    [self play];
 }
 
 - (void)zf_controlView:(UIView *)controlView resolutionAction:(UIButton *)sender {
@@ -1621,10 +1626,10 @@ typedef NS_ENUM(NSInteger, PanDirection){
         CGFloat totalTime     = (CGFloat)_playerItem.duration.value / _playerItem.duration.timescale;
         //计算出拖动的当前秒数
         CGFloat dragedSeconds = floorf(totalTime * slider.value);
-
+        
         //转换成CMTime才能给player来控制播放进度
         CMTime dragedCMTime   = CMTimeMake(dragedSeconds, 1);
-   
+        
         [controlView zf_playerDraggedTime:dragedSeconds totalTime:totalTime isForward:style hasPreview:self.isFullScreen ? self.hasPreviewView : NO];
         
         if (totalTime > 0) { // 当总时长 > 0时候才能拖动slider
@@ -1684,4 +1689,20 @@ typedef NS_ENUM(NSInteger, PanDirection){
 
 #pragma clang diagnostic pop
 
+- (UIImage *)screenshotFromTime:(CMTime)time{
+    if (self.urlAsset == nil) {
+        return nil;
+    }
+    
+    UIImage *thumbnail = nil;
+    AVAssetImageGenerator *imageGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:self.urlAsset];
+    [imageGenerator setAppliesPreferredTrackTransform:YES];
+    CGImageRef imageRef = [imageGenerator copyCGImageAtTime:time actualTime:NULL error:NULL];
+    if(imageRef != nil){
+        thumbnail = [UIImage imageWithCGImage:imageRef];
+    }
+    CGImageRelease(imageRef);  // CGImageRef won't be released by ARC
+    return thumbnail;
+}
 @end
+

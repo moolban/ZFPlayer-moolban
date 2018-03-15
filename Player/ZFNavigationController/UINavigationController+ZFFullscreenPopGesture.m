@@ -230,7 +230,7 @@ typedef void (^_ZFViewControllerWillAppearInjectBlock)(UIViewController *viewCon
     // 在x方向上移动的距离
     CGFloat tx = [recognizer translationInView:self.view].x;
     // 在x方向上移动的距离除以屏幕的宽度
-    CGFloat width_scale;
+    CGFloat width_scale = 0;
     if (recognizer.state == UIGestureRecognizerStateBegan) {
         // 添加截图到最后面
         width_scale = 0;
