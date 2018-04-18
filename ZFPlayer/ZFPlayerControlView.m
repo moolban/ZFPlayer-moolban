@@ -998,10 +998,10 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
         self.videoSlider.value           = value;
         self.bottomProgressView.progress = value;
         // 更新当前播放时间
-        self.currentTimeLabel.text       = [NSString stringWithFormat:@"%02zd:%02zd", proMin, proSec];
+        self.currentTimeLabel.text       = [NSString stringWithFormat:@"%02d:%02d", (int)proMin, (int)proSec];
     }
     // 更新总时间
-    self.totalTimeLabel.text = [NSString stringWithFormat:@"%02zd:%02zd", durMin, durSec];
+    self.totalTimeLabel.text = [NSString stringWithFormat:@"%02d:%02d", (int)durMin, (int)durSec];
 }
 
 - (void)zf_playerDraggedTime:(NSInteger)draggedTime totalTime:(NSInteger)totalTime isForward:(BOOL)forawrd hasPreview:(BOOL)preview {
@@ -1015,8 +1015,8 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
     NSInteger durMin = totalTime / 60;//总秒
     NSInteger durSec = totalTime % 60;//总分钟
     
-    NSString *currentTimeStr = [NSString stringWithFormat:@"%02zd:%02zd", proMin, proSec];
-    NSString *totalTimeStr   = [NSString stringWithFormat:@"%02zd:%02zd", durMin, durSec];
+    NSString *currentTimeStr = [NSString stringWithFormat:@"%02d:%02d", (int)proMin, (int)proSec];
+    NSString *totalTimeStr   = [NSString stringWithFormat:@"%02d:%02d", (int)durMin, (int)durSec];
     CGFloat  draggedValue    = (CGFloat)draggedTime/(CGFloat)totalTime;
     NSString *timeStr        = [NSString stringWithFormat:@"%@ / %@", currentTimeStr, totalTimeStr];
     
@@ -1057,7 +1057,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
     // 拖拽的时长
     NSInteger proMin = draggedTime / 60;//当前秒
     NSInteger proSec = draggedTime % 60;//当前分钟
-    NSString *currentTimeStr = [NSString stringWithFormat:@"%02zd:%02zd", proMin, proSec];
+    NSString *currentTimeStr = [NSString stringWithFormat:@"%02d:%02d", (int)proMin, (int)proSec];
     [self.videoSlider setImage:image];
     [self.videoSlider setText:currentTimeStr];
     self.fastView.hidden = YES;
