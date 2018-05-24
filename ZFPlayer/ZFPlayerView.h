@@ -89,6 +89,17 @@ typedef NS_ENUM(NSInteger, ZFPlayerState) {
 
 @property (nonatomic, assign) BOOL                    disableDoubleTabGesture;
 
+/** 播放属性 */
+@property (nonatomic, strong) AVPlayer               *player;
+@property (nonatomic, strong) AVPlayerItem           *playerItem;
+@property (nonatomic, strong) AVURLAsset             *urlAsset;
+@property (nonatomic, strong) AVAssetImageGenerator  *imageGenerator;
+/** playerLayer */
+@property (nonatomic, strong) AVPlayerLayer          *playerLayer;
+@property (nonatomic, strong) id                     timeObserve;
+/** 是否为全屏 */
+@property (nonatomic, assign) BOOL                   isFullScreen;
+
 /**
  *  单例，用于列表cell上多个视频
  *

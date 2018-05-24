@@ -41,14 +41,6 @@ typedef NS_ENUM(NSInteger, PanDirection){
 
 @interface ZFPlayerView () <UIGestureRecognizerDelegate,UIAlertViewDelegate>
 
-/** 播放属性 */
-@property (nonatomic, strong) AVPlayer               *player;
-@property (nonatomic, strong) AVPlayerItem           *playerItem;
-@property (nonatomic, strong) AVURLAsset             *urlAsset;
-@property (nonatomic, strong) AVAssetImageGenerator  *imageGenerator;
-/** playerLayer */
-@property (nonatomic, strong) AVPlayerLayer          *playerLayer;
-@property (nonatomic, strong) id                     timeObserve;
 /** 滑杆 */
 @property (nonatomic, strong) UISlider               *volumeViewSlider;
 /** 用来保存快进的总时长 */
@@ -57,8 +49,6 @@ typedef NS_ENUM(NSInteger, PanDirection){
 @property (nonatomic, assign) PanDirection           panDirection;
 /** 播发器的几种状态 */
 @property (nonatomic, assign) ZFPlayerState          state;
-/** 是否为全屏 */
-@property (nonatomic, assign) BOOL                   isFullScreen;
 /** 是否锁定屏幕方向 */
 @property (nonatomic, assign) BOOL                   isLocked;
 /** 是否在调节音量*/
