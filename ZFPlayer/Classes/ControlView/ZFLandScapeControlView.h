@@ -33,11 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) void(^sliderValueChanging)(CGFloat value,BOOL forward);
 @property (nonatomic, copy, nullable) void(^sliderValueChanged)(CGFloat value);
 
-<<<<<<< HEAD:ZFPlayer/ASValuePopUpView.h
-@interface ASValuePopUpView : UIView <CAAnimationDelegate>
-=======
 - (void)resetControlView;
->>>>>>> 3e122018b8f6936d5e9163553b1b5449e1793345:Pretest/Example/ZFPlayer/ControlView/ZFLandScapeControlView.h
 
 - (void)showControlView;
 
@@ -57,17 +53,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showTitle:(NSString *_Nullable)title
    fullScreenMode:(ZFFullScreenMode)fullScreenMode;
 
-<<<<<<< HEAD:ZFPlayer/ASValuePopUpView.h
-- (void)showAnimated:(BOOL)animated;
-- (void)hideAnimated:(BOOL)animated completionBlock:(void (^)(void))block;
-
-=======
 /// 根据当前播放状态取反
 - (void)playOrPause;
 
 - (void)playBtnSelectedState:(BOOL)selected;
-
->>>>>>> 3e122018b8f6936d5e9163553b1b5449e1793345:Pretest/Example/ZFPlayer/ControlView/ZFLandScapeControlView.h
 @end
 
 NS_ASSUME_NONNULL_END
