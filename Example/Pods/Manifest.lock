@@ -1,0 +1,30 @@
+PODS:
+  - ZFPlayer (3.0.5):
+    - ZFPlayer/AVPlayer (= 3.0.5)
+    - ZFPlayer/ControlView (= 3.0.5)
+    - ZFPlayer/Core (= 3.0.5)
+    - ZFPlayer/ijkplayer (= 3.0.5)
+    - ZFPlayer/KSYMediaPlayer (= 3.0.5)
+  - ZFPlayer/AVPlayer (3.0.5):
+    - ZFPlayer/Core
+  - ZFPlayer/ControlView (3.0.5):
+    - ZFPlayer/Core
+  - ZFPlayer/Core (3.0.5)
+  - ZFPlayer/ijkplayer (3.0.5):
+    - ZFPlayer/Core
+  - ZFPlayer/KSYMediaPlayer (3.0.5):
+    - ZFPlayer/Core
+
+DEPENDENCIES:
+  - ZFPlayer (from `../`)
+
+EXTERNAL SOURCES:
+  ZFPlayer:
+    :path: ../
+
+SPEC CHECKSUMS:
+  ZFPlayer: 12d03ada59064fba752d9db52c7d5cdef3c69e0d
+
+PODFILE CHECKSUM: 477fc51911be614c47b77041941fa4a2b5f48a98
+
+COCOAPODS: 1.4.0
