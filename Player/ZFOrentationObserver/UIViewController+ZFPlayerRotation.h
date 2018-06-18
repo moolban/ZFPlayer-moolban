@@ -1,5 +1,6 @@
 //
-//  ZFTableViewController.h
+//  UIViewController+ZFPlayerRotation.h
+//  ZFPlayer
 //
 // Copyright (c) 2016年 任子丰 ( http://github.com/renzifeng )
 //
@@ -23,6 +24,15 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ZFTableViewController : UIViewController
+@interface UIViewController (ZFPlayerRotation)
 
 @end
+
+@interface UINavigationController (ZFPlayerRotation)
+
+@end
+
+@interface UITabBarController (ZFPlayerRotation)
+
+@end
+
