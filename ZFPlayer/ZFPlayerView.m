@@ -468,9 +468,12 @@ typedef NS_ENUM(NSInteger, PanDirection){
     
     // 使用这个category的应用不会随着手机静音键打开而静音，可在手机静音下播放声音
     NSError *setCategoryError = nil;
-    BOOL success = [[AVAudioSession sharedInstance]
-                    setCategory: AVAudioSessionCategoryPlayback
-                    error: &setCategoryError];
+    BOOL success = YES;    
+    if ([[AVAudioSession sharedInstance] isOtherAudioPlaying]) {
+        success = [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:&setCategoryError];
+    }else{
+        success = [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&setCategoryError];
+    }
     
     if (!success) { /* handle the error in setCategoryError */ }
 }
