@@ -7,9 +7,9 @@
 //
 
 #import "ZFDouYinControlView.h"
-#import <ZFPlayer/UIView+ZFFrame.h>
-#import <ZFPlayer/UIImageView+ZFCache.h>
-#import <ZFPlayer/ZFUtilities.h>
+#import <ZFPlayer-moolban/UIView+ZFFrame.h>
+#import <ZFPlayer-moolban/UIImageView+ZFCache.h>
+#import <ZFPlayer-moolban/ZFUtilities.h>
 #import "ZFLoadingView.h"
 
 @interface ZFDouYinControlView ()

@@ -7,7 +7,7 @@
 //
 
 #import "ZFDouYinCell.h"
-#import <ZFPlayer/UIImageView+ZFCache.h>
+#import <ZFPlayer-moolban/UIImageView+ZFCache.h>
 
 @interface ZFDouYinCell ()
 @property (nonatomic, strong) UIImageView *coverImageView;

@@ -7,7 +7,7 @@
 //
 
 #import "ZFTableViewCell.h"
-#import <ZFPlayer/UIImageView+ZFCache.h>
+#import <ZFPlayer-moolban/UIImageView+ZFCache.h>
 
 @interface ZFTableViewCell ()
 @property (nonatomic, strong) UIImageView *headImageView;

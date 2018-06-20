@@ -7,10 +7,10 @@
 //
 
 #import "ZFNotAutoPlayViewController.h"
-#import <ZFPlayer/ZFPlayer.h>
-#import <ZFPlayer/ZFAVPlayerManager.h>
-#import <ZFPlayer/ZFPlayerControlView.h>
-#import <ZFPlayer/KSMediaPlayerManager.h>
+#import <ZFPlayer-moolban/ZFPlayer.h>
+#import <ZFPlayer-moolban/ZFAVPlayerManager.h>
+#import <ZFPlayer-moolban/ZFPlayerControlView.h>
+//#import <ZFPlayer-moolban/KSMediaPlayerManager.h>
 #import "ZFTableViewCell.h"
 #import "ZFTableData.h"
 

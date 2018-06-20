@@ -7,8 +7,8 @@
 //
 
 #import "ZFDouYinViewController.h"
-#import <ZFPlayer/ZFPlayer.h>
-#import <ZFPlayer/ZFAVPlayerManager.h>
+#import <ZFPlayer-moolban/ZFPlayer.h>
+#import <ZFPlayer-moolban/ZFAVPlayerManager.h>
 #import "ZFPlayerControlView.h"
 #import "ZFTableViewCellLayout.h"
 #import "ZFTableData.h"

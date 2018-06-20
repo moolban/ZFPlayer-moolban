@@ -1,7 +1,7 @@
 # Acknowledgements
 This application makes use of the following third party libraries:
 
-## ZFPlayer
+## ZFPlayer-moolban
 
 Copyright (c) 2018 renzifeng <zifeng1300@gmail.com>
 

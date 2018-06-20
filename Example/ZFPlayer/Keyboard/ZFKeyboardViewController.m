@@ -7,10 +7,10 @@
 //
 
 #import "ZFKeyboardViewController.h"
-#import <ZFPlayer/ZFPlayer.h>
-#import <ZFPlayer/ZFAVPlayerManager.h>
-#import <ZFPlayer/KSMediaPlayerManager.h>
-#import <ZFPlayer/ZFPlayerControlView.h>
+#import <ZFPlayer-moolban/ZFPlayer.h>
+#import <ZFPlayer-moolban/ZFAVPlayerManager.h>
+//#import <ZFPlayer-moolban/KSMediaPlayerManager.h>
+#import <ZFPlayer-moolban/ZFPlayerControlView.h>
 
 @interface ZFKeyboardViewController ()
 @property (nonatomic, strong) ZFPlayerController *player;

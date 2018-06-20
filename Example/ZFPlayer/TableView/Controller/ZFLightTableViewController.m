@@ -7,9 +7,9 @@
 //
 
 #import "ZFLightTableViewController.h"
-#import <ZFPlayer/ZFPlayer.h>
-#import <ZFPlayer/ZFAVPlayerManager.h>
-#import <ZFPlayer/ZFPlayerControlView.h>
+#import <ZFPlayer-moolban/ZFPlayer.h>
+#import <ZFPlayer-moolban/ZFAVPlayerManager.h>
+#import <ZFPlayer-moolban/ZFPlayerControlView.h>
 #import "ZFTableViewCellLayout.h"
 #import "ZFTableViewCell.h"
 #import "ZFTableData.h"
