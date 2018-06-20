@@ -1,5 +1,6 @@
 //
 //  ZFPortraitControlView.m
+//  ZFPlayer
 //
 // Copyright (c) 2016年 任子丰 ( http://github.com/renzifeng )
 //
@@ -23,7 +24,6 @@
 
 #import "ZFPortraitControlView.h"
 #import "UIView+ZFFrame.h"
-#import "ZFSliderView.h"
 #import "ZFUtilities.h"
 
 @interface ZFPortraitControlView () <ZFSliderViewDelegate>

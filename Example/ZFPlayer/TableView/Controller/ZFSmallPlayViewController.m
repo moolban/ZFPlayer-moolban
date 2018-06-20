@@ -10,6 +10,7 @@
 #import <ZFPlayer-moolban/ZFPlayer.h>
 #import <ZFPlayer-moolban/ZFAVPlayerManager.h>
 #import <ZFPlayer-moolban/ZFPlayerControlView.h>
+#import "ZFUtilities.h"
 #import "ZFTableViewCell.h"
 #import "ZFTableData.h"
 
