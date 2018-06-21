@@ -1,9 +1,0 @@
-source 'https://github.com/CocoaPods/Specs.git'
-platform:ios, '8.0'
-
-target 'ZFPlayer_Example' do
-    #pod 'KTVHTTPCache', :git => 'https://github.com/ChangbaDevs/KTVHTTPCache.git'
-    pod 'ZFPlayer-moolban', :path => '../'
-    pod 'ZFPlayer-moolban/ControlView', :path => '../'
-    pod 'ZFPlayer-moolban/AVPlayer', :path => '../'
-end
