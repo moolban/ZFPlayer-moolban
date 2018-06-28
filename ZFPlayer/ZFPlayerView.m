@@ -472,7 +472,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
     if ([[AVAudioSession sharedInstance] isOtherAudioPlaying]) {
         success = [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:&setCategoryError];
     }else{
-        success = [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&setCategoryError];
+        success = [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:&setCategoryError];
     }
     
     if (!success) { /* handle the error in setCategoryError */ }
