@@ -109,18 +109,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 0...1.0
 /// Only affects audio volume for the device instance and not for the player.
-/// You can change device volume or player volume as needed,change the player volume you can folllow the `ZFPlayerMediaPlayback` protocol.
+/// You can change device volume or player volume as needed,change the player volume you can conform the `ZFPlayerMediaPlayback` protocol.
 @property (nonatomic) float volume;
 
+/// The device muted.
 /// Only affects audio muting for the device instance and not for the player.
-/// You can change device mute or player mute as needed,change the player mute you can folllow the `ZFPlayerMediaPlayback` protocol.
+/// You can change device mute or player mute as needed,change the player mute you can conform the `ZFPlayerMediaPlayback` protocol.
 @property (nonatomic, getter=isMuted) BOOL muted;
 
 // 0...1.0, where 1.0 is maximum brightness. Only supported by main screen.
 @property (nonatomic) float brightness;
-
-/// WWAN network auto play, default is NO.
-@property (nonatomic, getter=isWWANAutoPlay) BOOL WWANAutoPlay;
 
 /// The play asset URL.
 @property (nonatomic) NSURL *assetURL;
@@ -146,11 +144,29 @@ NS_ASSUME_NONNULL_BEGIN
 /// For example, when the player is playing, application goes into the background or pushes to another viewController
 @property (nonatomic, getter=isPauseByEvent) BOOL pauseByEvent;
 
-/// When the player is play end.
-@property (nonatomic, copy, nullable) void(^playerDidToEnd)(id<ZFPlayerMediaPlayback> asset);
+/// The current player controller is disappear, not dealloc
+@property (nonatomic, getter=isViewControllerDisappear) BOOL viewControllerDisappear;
+
+/// The block invoked when the player is Ready to play.
+@property (nonatomic, copy, nullable) void(^playerPrepareToPlay)(id<ZFPlayerMediaPlayback> asset, NSURL *assetURL);
+
+/// The block invoked when the player play progress changed.
+@property (nonatomic, copy, nullable) void(^playerPlayTimeChanged)(id<ZFPlayerMediaPlayback> asset, NSTimeInterval currentTime, NSTimeInterval duration);
+
+/// The block invoked when the player play buffer changed.
+@property (nonatomic, copy, nullable) void(^playerBufferTimeChanged)(id<ZFPlayerMediaPlayback> asset, NSTimeInterval bufferTime);
+
+/// The block invoked when the player playback state changed.
+@property (nonatomic, copy, nullable) void(^playerPlayStatChanged)(id<ZFPlayerMediaPlayback> asset, ZFPlayerPlaybackState playState);
+
+/// The block invoked when the player load state changed.
+@property (nonatomic, copy, nullable) void(^playerLoadStatChanged)(id<ZFPlayerMediaPlayback> asset, ZFPlayerLoadState loadState);
 
 /// The block invoked when the player play failed.
 @property (nonatomic, copy, nullable) void(^playerPlayFailed)(id<ZFPlayerMediaPlayback> asset, id error);
+
+/// The block invoked when the player play end.
+@property (nonatomic, copy, nullable) void(^playerDidToEnd)(id<ZFPlayerMediaPlayback> asset);
 
 /// Play the next url ,while the `assetURLs` is not NULL.
 - (void)playTheNext;
@@ -242,8 +258,15 @@ NS_ASSUME_NONNULL_BEGIN
 /// The scrollView player should auto player, default is YES.
 @property (nonatomic) BOOL shouldAutoPlay;
 
-/// The list plays the container view of the player when the window is small after the player has slid off the screen.
+/// WWAN network auto play, only support in scrollView mode when the `shouldAutoPlay` is YES.
+/// default is NO.
+@property (nonatomic, getter=isWWANAutoPlay) BOOL WWANAutoPlay;
+
+/// The current playing cell has out off the screen, the player add the small container view.
 @property (nonatomic, readonly, nullable) ZFFloatView *smallFloatView;
+
+/// Whether the small window is displayed.
+@property (nonatomic, readonly) BOOL isSmallFloatViewShow;
 
 /// The indexPath is playing.
 @property (nonatomic, readonly, nullable) NSIndexPath *playingIndexPath;
@@ -251,14 +274,44 @@ NS_ASSUME_NONNULL_BEGIN
 /// The view tag that the player display in scrollView.
 @property (nonatomic, readonly) NSInteger containerViewTag;
 
-/// Does the currently playing cell stop playing when the cell has slid off the screen，defalut is YES.
+/// The current playing cell stop playing when the cell has out off the screen，defalut is YES.
 @property (nonatomic) BOOL stopWhileNotVisible;
 
-/// Whether the small window is displayed.
-@property (nonatomic, readonly) BOOL isSmallFloatViewShow;
+/// The current player scroll slides off the screen percent.
+/// the property used when the `stopWhileNotVisible` is YES, the current playing player stop percent.
+/// the property used when the `stopWhileNotVisible` is NO, the current playing player add to small container view percent.
+/// 0.0~1.0, defalut is 0.5.
+/// 0.0 is the player will disappear.
+/// 1.0 is the player did disappear.
+@property (nonatomic) CGFloat playerDisapperaPercent;
+
+/// The current player scroll to the screen percent.
+/// the property is only used when the `stopWhileNotVisible` is NO.
+/// 0.0~1.0, defalut is 0.0.
+/// 0.0 is the player will appear.
+/// 1.0 is the player did appear.
+@property (nonatomic) CGFloat playerApperaPercent;
 
 /// if tableView or collectionView has more section, use sectionAssetURLs.
 @property (nonatomic, copy, nullable) NSArray <NSArray <NSURL *>*>*sectionAssetURLs;
+
+/// The block invoked When the player appearing.
+@property (nonatomic, copy, nullable) void(^zf_playerAppearingInScrollView)(NSIndexPath *indexPath, CGFloat playerApperaPercent);
+
+/// The block invoked When the player disappearing.
+@property (nonatomic, copy, nullable) void(^zf_playerDisappearingInScrollView)(NSIndexPath *indexPath, CGFloat playerDisapperaPercent);
+
+/// The block invoked When the player will appeared.
+@property (nonatomic, copy, nullable) void(^zf_playerWillAppearInScrollView)(NSIndexPath *indexPath);
+
+/// The block invoked When the player did appeared.
+@property (nonatomic, copy, nullable) void(^zf_playerDidAppearInScrollView)(NSIndexPath *indexPath);
+
+/// The block invoked When the player will disappear.
+@property (nonatomic, copy, nullable) void(^zf_playerWillDisappearInScrollView)(NSIndexPath *indexPath);
+
+/// The block invoked When the player did disappeared.
+@property (nonatomic, copy, nullable) void(^zf_playerDidDisappearInScrollView)(NSIndexPath *indexPath);
 
 /// stop the current playing video on cell.
 - (void)stopCurrentPlayingCell;

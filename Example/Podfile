@@ -3,6 +3,9 @@ platform:ios, '8.0'
 
 target 'ZFPlayer_Example' do
 
+    pod 'FDFullscreenPopGesture'
+    pod 'MJRefresh'
+
     pod 'ZFPlayer-moolban', :path => '../'
     pod 'ZFPlayer-moolban/ControlView', :path => '../'
     pod 'ZFPlayer-moolban/AVPlayer', :path => '../'

@@ -25,8 +25,8 @@
 #import "ZFPortraitControlView.h"
 #import "UIView+ZFFrame.h"
 #import "ZFUtilities.h"
-#if __has_include(<ZFPlayer/ZFPlayer.h>)
-#import <ZFPlayer/ZFPlayer.h>
+#if __has_include(<ZFPlayer-moolban/ZFPlayer.h>)
+#import <ZFPlayer-moolban/ZFPlayer.h>
 #else
 #import "ZFPlayer.h"
 #endif
@@ -42,7 +42,7 @@
 @property (nonatomic, strong) UILabel *titleLabel;
 /// 播放或暂停按钮
 @property (nonatomic, strong) UIButton *playOrPauseBtn;
-/// 播放的当前时间label
+/// 播放的当前时间 
 @property (nonatomic, strong) UILabel *currentTimeLabel;
 /// 滑杆
 @property (nonatomic, strong) ZFSliderView *slider;
@@ -50,8 +50,6 @@
 @property (nonatomic, strong) UILabel *totalTimeLabel;
 /// 全屏按钮
 @property (nonatomic, strong) UIButton *fullScreenBtn;
-
-@property (nonatomic, assign) double durationTime;
 
 @property (nonatomic, assign) BOOL isShow;
 
@@ -93,14 +91,17 @@
 }
 
 - (void)sliderTouchEnded:(float)value {
-    self.slider.isdragging = YES;
     if (self.player.totalTime > 0) {
         @weakify(self)
         [self.player seekToTime:self.player.totalTime*value completionHandler:^(BOOL finished) {
             @strongify(self)
-            self.slider.isdragging = NO;
-            [self.player.currentPlayerManager play];
+            if (finished) {
+                self.slider.isdragging = NO;
+                [self.player.currentPlayerManager play];
+            }
         }];
+    } else {
+        self.slider.isdragging = NO;
     }
     if (self.sliderValueChanged) self.sliderValueChanged(value);
 }
@@ -117,15 +118,18 @@
 }
 
 - (void)sliderTapped:(float)value {
-    self.slider.isdragging = YES;
     if (self.player.totalTime > 0) {
+        self.slider.isdragging = YES;
         @weakify(self)
         [self.player seekToTime:self.player.totalTime*value completionHandler:^(BOOL finished) {
             @strongify(self)
-            self.slider.isdragging = NO;
-            [self.player.currentPlayerManager play];
+            if (finished) {
+                self.slider.isdragging = NO;
+                [self.player.currentPlayerManager play];
+            }
         }];
     } else {
+        self.slider.isdragging = NO;
         self.slider.value = 0;
     }
 }
@@ -133,7 +137,7 @@
 #pragma mark - action
 
 - (void)backBtnClickAction:(UIButton *)sender {
-
+    
 }
 
 - (void)playPauseButtonClickAction:(UIButton *)sender {
@@ -192,8 +196,8 @@
     self.playOrPauseBtn.frame = CGRectMake(min_x, min_y, min_w, min_h);
     self.playOrPauseBtn.center = self.center;
     
-    min_x = 10;
-    min_w = 48;
+    min_x = min_margin;
+    min_w = 62;
     min_h = 28;
     min_y = (self.bottomToolView.height - min_h)/2;
     self.currentTimeLabel.frame = CGRectMake(min_x, min_y, min_w, min_h);
@@ -205,20 +209,20 @@
     self.fullScreenBtn.frame = CGRectMake(min_x, min_y, min_w, min_h);
     self.fullScreenBtn.centerY = self.currentTimeLabel.centerY;
     
-    min_w = 48;
+    min_w = 62;
     min_h = 28;
     min_x = self.fullScreenBtn.left - min_w - 4;
     min_y = 0;
     self.totalTimeLabel.frame = CGRectMake(min_x, min_y, min_w, min_h);
     self.totalTimeLabel.centerY = self.currentTimeLabel.centerY;
     
-    min_x = self.currentTimeLabel.right + min_margin;
+    min_x = self.currentTimeLabel.right + 4;
     min_y = 0;
-    min_w = self.totalTimeLabel.left - min_x - min_margin;
+    min_w = self.totalTimeLabel.left - min_x - 4;
     min_h = 30;
     self.slider.frame = CGRectMake(min_x, min_y, min_w, min_h);
     self.slider.centerY = self.currentTimeLabel.centerY;
- 
+    
     if (!self.isShow) {
         self.topToolView.y = -self.topToolView.height;
         self.bottomToolView.y = self.height;
@@ -262,11 +266,6 @@
     self.playOrPauseBtn.alpha = 0;
     self.player.statusBarHidden = NO;
     self.topToolView.alpha = 0;
-    self.bottomToolView.alpha = 0;
-}
-
-- (void)zf_playDidEnd {
-    self.backBtn.alpha = 1;
     self.bottomToolView.alpha = 0;
 }
 
@@ -387,6 +386,5 @@
     }
     return _fullScreenBtn;
 }
-
 
 @end

@@ -8,8 +8,8 @@
 #import "ZFSpeedLoadingView.h"
 #import "ZFNetworkSpeedMonitor.h"
 #import "UIView+ZFFrame.h"
-#if __has_include(<ZFPlayer/ZFPlayer.h>)
-#import <ZFPlayer/ZFPlayer.h>
+#if __has_include(<ZFPlayer-moolban/ZFPlayer.h>)
+#import <ZFPlayer-moolban/ZFPlayer.h>
 #else
 #import "ZFPlayer.h"
 #endif

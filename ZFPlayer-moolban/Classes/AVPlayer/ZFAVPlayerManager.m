@@ -31,6 +31,9 @@
 #import "ZFPlayer.h"
 #endif
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored"-Wdeprecated-declarations"
+
 /*!
  *  Refresh interval for timed observations of AVPlayer
  */
@@ -45,16 +48,12 @@ static NSString *const kPresentationSize         = @"presentationSize";
 @interface ZFPlayerPresentView : ZFPlayerView
 
 @property (nonatomic, strong) AVPlayer *player;
-@property (nonatomic, strong) UIImage *placeholder;
 /// default is AVLayerVideoGravityResizeAspect.
 @property (nonatomic, strong) AVLayerVideoGravity videoGravity;
-@property (nonatomic, strong, readonly) UIImageView *placeholderImageView;
 
 @end
 
 @implementation ZFPlayerPresentView
-
-@synthesize placeholderImageView = _placeholderImageView;
 
 + (Class)layerClass {
     return [AVPlayerLayer class];
@@ -67,7 +66,7 @@ static NSString *const kPresentationSize         = @"presentationSize";
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        [self presentSetupView];
+        self.backgroundColor = [UIColor blackColor];
     }
     return self;
 }
@@ -77,12 +76,6 @@ static NSString *const kPresentationSize         = @"presentationSize";
     self.avLayer.player = player;
 }
 
-- (void)setPlaceholder:(UIImage *)placeholder {
-    if (placeholder == _placeholder) return;
-    _placeholder = placeholder;
-    _placeholderImageView.image = placeholder;
-}
-
 - (void)setVideoGravity:(AVLayerVideoGravity)videoGravity {
     if (videoGravity == self.videoGravity) return;
     [self avLayer].videoGravity = videoGravity;
@@ -90,23 +83,6 @@ static NSString *const kPresentationSize         = @"presentationSize";
 
 - (AVLayerVideoGravity)videoGravity {
     return [self avLayer].videoGravity;
-}
-
-#pragma mark -
-
-- (void)presentSetupView {
-    self.backgroundColor = [UIColor blackColor];
-    [self addSubview:self.placeholderImageView];
-    self.placeholderImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-}
-
-- (UIImageView *)placeholderImageView {
-    if (!_placeholderImageView) {
-        _placeholderImageView = [UIImageView new];
-        _placeholderImageView.contentMode = UIViewContentModeScaleAspectFill;
-        _placeholderImageView.clipsToBounds = YES;
-    }
-    return _placeholderImageView;
 }
 
 @end
@@ -120,6 +96,7 @@ static NSString *const kPresentationSize         = @"presentationSize";
 @property (nonatomic, strong, readonly) AVPlayerItem *playerItem;
 @property (nonatomic, strong, readonly) AVPlayer *player;
 @property (nonatomic, strong) AVPlayerLayer *playerLayer;
+@property (nonatomic, assign) BOOL isBuffering;
 
 @end
 
@@ -176,14 +153,14 @@ static NSString *const kPresentationSize         = @"presentationSize";
     } else {
         [self.player play];
         self.player.rate = self.rate;
-        _isPlaying = YES;
+        self->_isPlaying = YES;
         self.playState = ZFPlayerPlayStatePlaying;
     }
 }
 
 - (void)pause {
     [self.player pause];
-    _isPlaying = NO;
+    self->_isPlaying = NO;
     self.playState = ZFPlayerPlayStatePaused;
 }
 
@@ -198,21 +175,22 @@ static NSString *const kPresentationSize         = @"presentationSize";
     _isPlaying = NO;
     _player = nil;
     _assetURL = nil;
+    self->_currentTime = 0;
+    self->_totalTime = 0;
+    self->_bufferTime = 0;
 }
 
 - (void)replay {
-    __weak typeof(self) weakSelf = self;
+    @weakify(self)
     [self seekToTime:0 completionHandler:^(BOOL finished) {
-        __strong typeof(weakSelf) strongSelf = self;
-        [strongSelf play];
+        @strongify(self)
+        [self play];
     }];
 }
 
 /// Replace the current playback address
 - (void)replaceCurrentAssetURL:(NSURL *)assetURL {
-    if (self.player) [self stop];
-    _assetURL = assetURL;
-    [self prepareToPlay];
+    self.assetURL = assetURL;
 }
 
 - (void)seekToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
@@ -267,7 +245,7 @@ static NSString *const kPresentationSize         = @"presentationSize";
 
 - (void)initializePlayer {
     _asset = [AVURLAsset assetWithURL:self.assetURL];
-    _playerItem = [AVPlayerItem playerItemWithAsset:_asset automaticallyLoadedAssetKeys:@[@"duration"]];
+    _playerItem = [AVPlayerItem playerItemWithAsset:_asset];
     _player = [AVPlayer playerWithPlayerItem:_playerItem];
     _player.actionAtItemEnd = AVPlayerActionAtItemEndPause;
     [self enableAudioTracks:YES inPlayerItem:_playerItem];
@@ -299,22 +277,21 @@ static NSString *const kPresentationSize         = @"presentationSize";
  */
 - (void)bufferingSomeSecond {
     // playbackBufferEmpty会反复进入，因此在bufferingOneSecond延时播放执行完之前再调用bufferingSomeSecond都忽略
-    __block BOOL isBuffering = NO;
-    if (isBuffering) return;
-    isBuffering = YES;
+    if (self.isBuffering) return;
+    self.isBuffering = YES;
     
     // 需要先暂停一小会之后再播放，否则网络状况不好的时候时间在走，声音播放不出来
     [self.player pause];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         // 如果此时用户已经暂停了，则不再需要开启播放了
         if (!self.isPlaying) {
-            isBuffering = NO;
+            self.isBuffering = NO;
             return;
         }
         [self play];
         // 如果执行了play还是没有播放则说明还没有缓存好，则再次缓存一段时间
-        isBuffering = NO;
-        if (!self.playerItem.isPlaybackLikelyToKeepUp) { [self bufferingSomeSecond]; }
+        self.isBuffering = NO;
+        if (!self.playerItem.isPlaybackLikelyToKeepUp) [self bufferingSomeSecond];
     });
 }
 
@@ -341,16 +318,14 @@ static NSString *const kPresentationSize         = @"presentationSize";
                            forKeyPath:kPresentationSize
                               options:NSKeyValueObservingOptionNew
                               context:nil];
-
+    
     CMTime interval = CMTimeMakeWithSeconds(kTimeRefreshInterval, NSEC_PER_SEC);
     @weakify(self)
     _timeObserver = [self.player addPeriodicTimeObserverForInterval:interval queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
         @strongify(self)
         if (!self) return;
         NSArray *loadedRanges = self.playerItem.seekableTimeRanges;
-        if (loadedRanges.count > 0 && self.playerItem.duration.timescale != 0) {
-            self->_currentTime = CMTimeGetSeconds(time);
-            self->_totalTime = CMTimeGetSeconds(self.playerItem.duration);
+        if (loadedRanges.count > 0) {
             if (self.playerPlayTimeChanged) self.playerPlayTimeChanged(self, self.currentTime, self.totalTime);
         }
     }];
@@ -365,56 +340,78 @@ static NSString *const kPresentationSize         = @"presentationSize";
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     dispatch_async(dispatch_get_main_queue(), ^{
-         if ([keyPath isEqualToString:kStatus]) {
-             if (self.player.currentItem.status == AVPlayerItemStatusReadyToPlay) {
-                 self.loadState = ZFPlayerLoadStatePlaythroughOK;
-                 if (self.seekTime) {
-                     [self seekToTime:self.seekTime completionHandler:nil];
-                     self.seekTime = 0; // 滞空, 防止下次播放出错
-                 }
-                 [self play];
-                 self.player.muted = self.muted;
-             } else if (self.player.currentItem.status == AVPlayerItemStatusFailed) {
-                 self.playState = ZFPlayerPlayStatePlayFailed;
-                 NSError *error = self.player.currentItem.error;
-                 if (self.playerPlayFailed) self.playerPlayFailed(self, error);
-             }
-         } else if ([keyPath isEqualToString:kPlaybackBufferEmpty]) {
-             // When the buffer is empty
-             if (self.playerItem.playbackBufferEmpty) {
-                 self.loadState = ZFPlayerLoadStateStalled;
-                 [self bufferingSomeSecond];
-             }
-         } else if ([keyPath isEqualToString:kPlaybackLikelyToKeepUp]) {
-             // When the buffer is good
-             if (self.playerItem.playbackLikelyToKeepUp) {
-                 self.loadState = ZFPlayerLoadStatePlayable;
-             }
-         } else if ([keyPath isEqualToString:kLoadedTimeRanges]) {
-             NSTimeInterval bufferTime = [self availableDuration];
-             self->_bufferTime = bufferTime;
-             if (self.playerBufferTimeChanged) {
-                 self.playerBufferTimeChanged(self, bufferTime);
-             }
-         } else if ([keyPath isEqualToString:kPresentationSize]) {
-             self->_presentationSize = self.playerItem.presentationSize;
-         } else {
-             [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-         }
+        if ([keyPath isEqualToString:kStatus]) {
+            if (self.player.currentItem.status == AVPlayerItemStatusReadyToPlay) {
+                self.loadState = ZFPlayerLoadStatePlaythroughOK;
+                if (self.seekTime) {
+                    [self seekToTime:self.seekTime completionHandler:nil];
+                    self.seekTime = 0; // 滞空, 防止下次播放出错
+                }
+                if (self.isPlaying) [self play];
+                self.player.muted = self.muted;
+                NSArray *loadedRanges = self.playerItem.seekableTimeRanges;
+                if (loadedRanges.count > 0) {
+                    /// Fix https://github.com/renzifeng/ZFPlayer/issues/475
+                    if (self.playerPlayTimeChanged) self.playerPlayTimeChanged(self, self.currentTime, self.totalTime);
+                }
+            } else if (self.player.currentItem.status == AVPlayerItemStatusFailed) {
+                self.playState = ZFPlayerPlayStatePlayFailed;
+                NSError *error = self.player.currentItem.error;
+                if (self.playerPlayFailed) self.playerPlayFailed(self, error);
+            }
+        } else if ([keyPath isEqualToString:kPlaybackBufferEmpty]) {
+            // When the buffer is empty
+            if (self.playerItem.playbackBufferEmpty) {
+                self.loadState = ZFPlayerLoadStateStalled;
+                [self bufferingSomeSecond];
+            }
+        } else if ([keyPath isEqualToString:kPlaybackLikelyToKeepUp]) {
+            // When the buffer is good
+            if (self.playerItem.playbackLikelyToKeepUp) {
+                self.loadState = ZFPlayerLoadStatePlayable;
+            }
+        } else if ([keyPath isEqualToString:kLoadedTimeRanges]) {
+            if (self.isPlaying && self.playerItem.playbackLikelyToKeepUp) [self play];
+            NSTimeInterval bufferTime = [self availableDuration];
+            self->_bufferTime = bufferTime;
+            if (self.playerBufferTimeChanged) self.playerBufferTimeChanged(self, bufferTime);
+        } else if ([keyPath isEqualToString:kPresentationSize]) {
+            self->_presentationSize = self.playerItem.presentationSize;
+        } else {
+            [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+        }
     });
 }
+
 
 #pragma mark - getter
 
 - (UIView *)view {
     if (!_view) {
         _view = [[ZFPlayerPresentView alloc] init];
+        _view.backgroundColor = [UIColor blackColor];
     }
     return _view;
 }
 
 - (float)rate {
     return _rate == 0 ?1:_rate;
+}
+
+- (NSTimeInterval)totalTime {
+    NSTimeInterval sec = CMTimeGetSeconds(self.player.currentItem.duration);
+    if (isnan(sec)) {
+        return 0;
+    }
+    return sec;
+}
+
+- (NSTimeInterval)currentTime {
+    NSTimeInterval sec = CMTimeGetSeconds(self.playerItem.currentTime);
+    if (isnan(sec)) {
+        return 0;
+    }
+    return sec;
 }
 
 #pragma mark - setter
@@ -430,8 +427,9 @@ static NSString *const kPresentationSize         = @"presentationSize";
 }
 
 - (void)setAssetURL:(NSURL *)assetURL {
+    if (self.player) [self stop];
     _assetURL = assetURL;
-    [self replaceCurrentAssetURL:assetURL];
+    [self prepareToPlay];
 }
 
 - (void)setRate:(float)rate {
@@ -473,3 +471,5 @@ static NSString *const kPresentationSize         = @"presentationSize";
 }
 
 @end
+
+#pragma clang diagnostic pop

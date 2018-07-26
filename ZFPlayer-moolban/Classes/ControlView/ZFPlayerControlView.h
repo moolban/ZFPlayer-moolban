@@ -29,7 +29,6 @@
 #import "ZFSpeedLoadingView.h"
 
 @interface ZFPlayerControlView : UIView <ZFPlayerMediaControl>
-
 /// 竖屏控制层的View
 @property (nonatomic, strong, readonly) ZFPortraitControlView *portraitControlView;
 /// 横屏控制层的View
@@ -50,11 +49,12 @@
 @property (nonatomic, strong, readonly) ZFSliderView *bottomPgrogress;
 /// 封面图
 @property (nonatomic, strong, readonly) UIImageView *coverImageView;
+/// 占位图，默认是灰色
+@property (nonatomic, strong) UIImage *placeholderImage;
 
-- (void)showTitle:(NSString *)title
-   coverURLString:(NSString *)coverUrl
-   fullScreenMode:(ZFFullScreenMode)fullScreenMode;
-
+/// 设置标题、封面、全屏模式
+- (void)showTitle:(NSString *)title coverURLString:(NSString *)coverUrl fullScreenMode:(ZFFullScreenMode)fullScreenMode;
+/// 重置控制层
 - (void)resetControlView;
 
 @end

@@ -187,53 +187,92 @@ UIKIT_STATIC_INLINE void Hook_Method(Class originalClass, SEL originalSel, Class
 
 - (void)scrollViewScrolling {
     if (!self.zf_enableScrollHook) return;
+    
     CGFloat offsetY = self.contentOffset.y;
     self.zf_scrollDerection = (offsetY - self.zf_lastOffsetY > 0) ? ZFPlayerScrollDerectionUp : ZFPlayerScrollDerectionDown;
     self.zf_lastOffsetY = offsetY;
     
     // Avoid being paused the first time you play it.
     if (self.contentOffset.y < 0) return;
-    if (self.zf_playingIndexPath) {
-        UIView *cell = [self zf_getCellForIndexPath:self.zf_playingIndexPath];
-        if (!cell) {
-            if (self.zf_playerDidDisappearInScrollView) self.zf_playerDidDisappearInScrollView(self.zf_playingIndexPath);
-            return;
+    if (!self.zf_playingIndexPath) return;
+    
+    UIView *cell = [self zf_getCellForIndexPath:self.zf_playingIndexPath];
+    if (!cell) {
+        if (self.zf_playerDidDisappearInScrollView) self.zf_playerDidDisappearInScrollView(self.zf_playingIndexPath);
+        return;
+    }
+    UIView *playerView = [cell viewWithTag:self.zf_containerViewTag];
+    CGRect rect1 = [playerView convertRect:playerView.frame toView:self];
+    CGRect rect = [self convertRect:rect1 toView:self.superview];
+    /// playerView top to scrollView top space.
+    CGFloat topSpacing = CGRectGetMinY(rect) - CGRectGetMinY(self.frame) - CGRectGetMinY(playerView.frame) - self.contentInset.top;
+    /// playerView bottom to scrollView bottom space.
+    CGFloat bottomSpacing = CGRectGetMaxY(self.frame) - CGRectGetMaxY(rect) + CGRectGetMinY(playerView.frame) - self.contentInset.bottom;
+    /// The height of the content area.
+    CGFloat contentInsetHeight = CGRectGetMaxY(self.frame) - CGRectGetMinY(self.frame) - self.contentInset.top - self.contentInset.bottom;
+    
+    CGFloat playerDisapperaPercent = 0;
+    CGFloat playerApperaPercent = 0;
+    
+    if (self.zf_scrollDerection == ZFPlayerScrollDerectionUp) { /// Scroll up
+        /// Player is disappearing.
+        if (topSpacing <= 0 && CGRectGetHeight(rect) != 0) {
+            playerDisapperaPercent = -topSpacing/CGRectGetHeight(rect);
+            if (playerDisapperaPercent > 1.0) playerDisapperaPercent = 1.0;
+            if (self.zf_playerDisappearingInScrollView) self.zf_playerDisappearingInScrollView(self.zf_playingIndexPath, playerDisapperaPercent);
         }
-        UIView *playerView = [cell viewWithTag:self.zf_containerViewTag];
-        CGRect rect1 = [playerView convertRect:playerView.frame toView:self];
-        CGRect rect = [self convertRect:rect1 toView:self.superview];
-        CGFloat topSpacing = rect.origin.y - CGRectGetMinY(self.frame) - CGRectGetMinY(playerView.frame) - self.contentInset.bottom;
-        CGFloat bottomSpacing = CGRectGetMaxY(self.frame) - CGRectGetMaxY(rect) + CGRectGetMinY(self.frame) + self.contentInset.top;
         
-        if (self.zf_scrollDerection == ZFPlayerScrollDerectionUp) { /// Scroll up
-            /// Top area
-            if (topSpacing <= 0 && topSpacing > -CGRectGetHeight(rect)/2) {
-                /// When the player will disappear.
-                if (self.zf_playerWillDisappearInScrollView) self.zf_playerWillDisappearInScrollView(self.zf_playingIndexPath);
-            } else if (topSpacing <= -CGRectGetHeight(rect)/2 && topSpacing > -CGRectGetHeight(rect)) {
-                /// When the player did disappeared half.
-                if (self.zf_playerDisappearHalfInScrollView) self.zf_playerDisappearHalfInScrollView(self.zf_playingIndexPath);
-            } else if (topSpacing <= -CGRectGetHeight(rect)) {
-                /// When the player did disappeared.
-                if (self.zf_playerDidDisappearInScrollView) self.zf_playerDidDisappearInScrollView(self.zf_playingIndexPath);
-            } else if (topSpacing > 0 && topSpacing < CGRectGetHeight(self.frame)) {
-                /// In visable area
+        /// Top area
+        if (topSpacing <= 0 && topSpacing > -CGRectGetHeight(rect)/2) {
+            /// When the player will disappear.
+            if (self.zf_playerWillDisappearInScrollView) self.zf_playerWillDisappearInScrollView(self.zf_playingIndexPath);
+        } else if (topSpacing <= -CGRectGetHeight(rect)) {
+            /// When the player did disappeared.
+            if (self.zf_playerDidDisappearInScrollView) self.zf_playerDidDisappearInScrollView(self.zf_playingIndexPath);
+        } else if (topSpacing > 0 && topSpacing <= contentInsetHeight) {
+            /// Player is appearing.
+            if (CGRectGetHeight(rect) != 0) {
+                playerApperaPercent = -(topSpacing-contentInsetHeight)/CGRectGetHeight(rect);
+                if (playerApperaPercent > 1.0) playerApperaPercent = 1.0;
+                if (self.zf_playerAppearingInScrollView) self.zf_playerAppearingInScrollView(self.zf_playingIndexPath, playerApperaPercent);
+            }
+            /// In visable area
+            if (topSpacing <= contentInsetHeight && topSpacing > contentInsetHeight-CGRectGetHeight(rect)/2) {
+                /// When the player will appear.
+                if (self.zf_playerWillAppearInScrollView) self.zf_playerWillAppearInScrollView(self.zf_playingIndexPath);
+            } else {
                 /// When the player did appeared.
                 if (self.zf_playerDidAppearInScrollView) self.zf_playerDidAppearInScrollView(self.zf_playingIndexPath);
             }
-        } else if (self.zf_scrollDerection == ZFPlayerScrollDerectionDown) { /// Scroll Down
-            /// Bottom area
-            if (bottomSpacing <= 0 && bottomSpacing > -CGRectGetHeight(rect)/2) {
-                /// When the player will disappear.
-                if (self.zf_playerWillDisappearInScrollView) self.zf_playerWillDisappearInScrollView(self.zf_playingIndexPath);
-            } else if (bottomSpacing <= -CGRectGetHeight(rect)/2 && bottomSpacing > -CGRectGetHeight(rect)) {
-                /// When the player did disappeared half.
-                if (self.zf_playerDisappearHalfInScrollView) self.zf_playerDisappearHalfInScrollView(self.zf_playingIndexPath);
-            } else if (bottomSpacing <= -CGRectGetHeight(rect)) {
-                /// When the player did disappeared.
-                if (self.zf_playerDidDisappearInScrollView) self.zf_playerDidDisappearInScrollView(self.zf_playingIndexPath);
-            } else if (bottomSpacing > 0 && bottomSpacing < CGRectGetHeight(self.frame)) {
-                /// In visable area
+        }
+        
+    } else if (self.zf_scrollDerection == ZFPlayerScrollDerectionDown) { /// Scroll Down
+        /// Player is disappearing.
+        if (bottomSpacing <= 0 && CGRectGetHeight(rect) != 0) {
+            playerDisapperaPercent = -bottomSpacing/CGRectGetHeight(rect);
+            if (playerDisapperaPercent > 1.0) playerDisapperaPercent = 1.0;
+            if (self.zf_playerDisappearingInScrollView) self.zf_playerDisappearingInScrollView(self.zf_playingIndexPath, playerDisapperaPercent);
+        }
+        
+        /// Bottom area
+        if (bottomSpacing <= 0 && bottomSpacing > -CGRectGetHeight(rect)/2) {
+            /// When the player will disappear.
+            if (self.zf_playerWillDisappearInScrollView) self.zf_playerWillDisappearInScrollView(self.zf_playingIndexPath);
+        } else if (bottomSpacing <= -CGRectGetHeight(rect)) {
+            /// When the player did disappeared.
+            if (self.zf_playerDidDisappearInScrollView) self.zf_playerDidDisappearInScrollView(self.zf_playingIndexPath);
+        } else if (bottomSpacing > 0 && bottomSpacing <= contentInsetHeight) {
+            /// Player is appearing.
+            if (CGRectGetHeight(rect) != 0) {
+                playerApperaPercent = -(bottomSpacing-contentInsetHeight)/CGRectGetHeight(rect);
+                if (playerApperaPercent > 1.0) playerApperaPercent = 1.0;
+                if (self.zf_playerAppearingInScrollView) self.zf_playerAppearingInScrollView(self.zf_playingIndexPath, playerApperaPercent);
+            }
+            /// In visable area
+            if (bottomSpacing <= contentInsetHeight && bottomSpacing > contentInsetHeight-CGRectGetHeight(rect)/2) {
+                /// When the player will appear.
+                if (self.zf_playerWillAppearInScrollView) self.zf_playerWillAppearInScrollView(self.zf_playingIndexPath);
+            } else {
                 /// When the player did appeared.
                 if (self.zf_playerDidAppearInScrollView) self.zf_playerDidAppearInScrollView(self.zf_playingIndexPath);
             }
@@ -243,7 +282,6 @@ UIKIT_STATIC_INLINE void Hook_Method(Class originalClass, SEL originalSel, Class
 
 - (void)zf_filterShouldPlayCellWhileScrolling:(void (^ __nullable)(NSIndexPath *indexPath))handler {
     if (!self.zf_shouldAutoPlay) return;
-    if ([ZFReachabilityManager sharedManager].isReachableViaWWAN && !self.zf_WWANAutoPlay) return;
     NSArray *visiableCells = nil;
     NSIndexPath *indexPath = nil;
     if ([self isKindOfClass:[UITableView class]]) {
@@ -322,7 +360,9 @@ UIKIT_STATIC_INLINE void Hook_Method(Class originalClass, SEL originalSel, Class
     __block NSIndexPath *finalIndexPath = nil;
     /// 最终距离中线的间距
     __block CGFloat finalSpace = 0;
+    @weakify(self)
     [cellsArray enumerateObjectsUsingBlock:^(UIView *cell, NSUInteger idx, BOOL * _Nonnull stop) {
+        @strongify(self)
         UIView *playerView = [cell viewWithTag:self.zf_containerViewTag];
         if (!playerView) return;
         CGRect rect1 = [playerView convertRect:playerView.frame toView:self];
@@ -336,6 +376,7 @@ UIKIT_STATIC_INLINE void Hook_Method(Class originalClass, SEL originalSel, Class
             /// 如果有正在播放的cell，直接停止遍历
             if (self.zf_playingIndexPath) {
                 indexPath = self.zf_playingIndexPath;
+                finalIndexPath = indexPath;
                 *stop = YES;
                 return;
             }
@@ -354,11 +395,14 @@ UIKIT_STATIC_INLINE void Hook_Method(Class originalClass, SEL originalSel, Class
 
 - (void)zf_filterShouldPlayCellWhileScrolled:(void (^ __nullable)(NSIndexPath *indexPath))handler {
     if (!self.zf_shouldAutoPlay) return;
-    if ([ZFReachabilityManager sharedManager].isReachableViaWWAN && !self.zf_WWANAutoPlay) return;
     @weakify(self)
     [self zf_filterShouldPlayCellWhileScrolling:^(NSIndexPath *indexPath) {
         @strongify(self)
-        if ([ZFReachabilityManager sharedManager].isReachableViaWWAN) return;
+        if ([ZFReachabilityManager sharedManager].isReachableViaWWAN && !self.zf_WWANAutoPlay) {
+            /// 移动网络
+            self.zf_shouldPlayIndexPath = indexPath;
+            return;
+        }
         if (!self.zf_playingIndexPath) {
             if (handler) handler(indexPath);
             self.zf_playingIndexPath = indexPath;
@@ -412,10 +456,6 @@ UIKIT_STATIC_INLINE void Hook_Method(Class originalClass, SEL originalSel, Class
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
-- (BOOL)zf_isPlaying {
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
-}
-
 - (NSIndexPath *)zf_playingIndexPath {
     return objc_getAssociatedObject(self, _cmd);
 }
@@ -447,28 +487,16 @@ UIKIT_STATIC_INLINE void Hook_Method(Class originalClass, SEL originalSel, Class
     return YES;
 }
 
-- (void (^)(NSIndexPath * _Nonnull))zf_playerDidAppearInScrollView {
-    return objc_getAssociatedObject(self, _cmd);
-}
-
-- (void (^)(NSIndexPath * _Nonnull))zf_playerWillDisappearInScrollView {
-    return objc_getAssociatedObject(self, _cmd);
-}
-
-- (void (^)(NSIndexPath * _Nonnull))zf_playerDisappearHalfInScrollView {
-    return objc_getAssociatedObject(self, _cmd);
-}
-
-- (void (^)(NSIndexPath * _Nonnull))zf_playerDidDisappearInScrollView {
-    return objc_getAssociatedObject(self, _cmd);
+- (CGFloat)zf_lastOffsetY {
+    return [objc_getAssociatedObject(self, _cmd) floatValue];
 }
 
 - (void (^)(NSIndexPath * _Nonnull))zf_scrollViewDidStopScrollCallback {
     return objc_getAssociatedObject(self, _cmd);
 }
 
-- (CGFloat)zf_lastOffsetY {
-    return [objc_getAssociatedObject(self, _cmd) floatValue];
+- (void (^)(NSIndexPath * _Nonnull))zf_shouldPlayIndexPathCallback {
+    return objc_getAssociatedObject(self, _cmd);
 }
 
 #pragma mark - setter
@@ -477,15 +505,13 @@ UIKIT_STATIC_INLINE void Hook_Method(Class originalClass, SEL originalSel, Class
     objc_setAssociatedObject(self, @selector(zf_enableScrollHook), @(zf_enableScrollHook), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (void)setZf_playing:(BOOL)zf_playing {
-    objc_setAssociatedObject(self, @selector(zf_isPlaying), @(zf_playing), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
 - (void)setZf_playingIndexPath:(NSIndexPath *)zf_playingIndexPath {
     objc_setAssociatedObject(self, @selector(zf_playingIndexPath), zf_playingIndexPath, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if (zf_playingIndexPath) self.zf_shouldPlayIndexPath = zf_playingIndexPath;
 }
 
 - (void)setZf_shouldPlayIndexPath:(NSIndexPath *)zf_shouldPlayIndexPath {
+    if (self.zf_shouldPlayIndexPathCallback) self.zf_shouldPlayIndexPathCallback(zf_shouldPlayIndexPath);
     objc_setAssociatedObject(self, @selector(zf_shouldPlayIndexPath), zf_shouldPlayIndexPath, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     self.shouldPlayIndexPath = zf_shouldPlayIndexPath;
 }
@@ -510,6 +536,58 @@ UIKIT_STATIC_INLINE void Hook_Method(Class originalClass, SEL originalSel, Class
     objc_setAssociatedObject(self, @selector(zf_shouldAutoPlay), @(zf_shouldAutoPlay), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
+- (void)setZf_lastOffsetY:(CGFloat)zf_lastOffsetY {
+    objc_setAssociatedObject(self, @selector(zf_lastOffsetY), @(zf_lastOffsetY), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (void)setZf_scrollViewDidStopScrollCallback:(void (^)(NSIndexPath * _Nonnull))zf_scrollViewDidStopScrollCallback {
+    objc_setAssociatedObject(self, @selector(zf_scrollViewDidStopScrollCallback), zf_scrollViewDidStopScrollCallback, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void)setZf_shouldPlayIndexPathCallback:(void (^)(NSIndexPath * _Nonnull))zf_shouldPlayIndexPathCallback {
+    objc_setAssociatedObject(self, @selector(zf_shouldPlayIndexPathCallback), zf_shouldPlayIndexPathCallback, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+@end
+
+@implementation UIScrollView (ZFPlayerCannotCalled)
+
+#pragma mark - getter
+
+- (void (^)(NSIndexPath * _Nonnull, CGFloat))zf_playerDisappearingInScrollView {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void (^)(NSIndexPath * _Nonnull, CGFloat))zf_playerAppearingInScrollView {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void (^)(NSIndexPath * _Nonnull))zf_playerDidAppearInScrollView {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void (^)(NSIndexPath * _Nonnull))zf_playerWillDisappearInScrollView {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void (^)(NSIndexPath * _Nonnull))zf_playerWillAppearInScrollView {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void (^)(NSIndexPath * _Nonnull))zf_playerDidDisappearInScrollView {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+#pragma mark - setter
+
+- (void)setZf_playerDisappearingInScrollView:(void (^)(NSIndexPath * _Nonnull, CGFloat))zf_playerDisappearingInScrollView {
+    objc_setAssociatedObject(self, @selector(zf_playerDisappearingInScrollView), zf_playerDisappearingInScrollView, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void)setZf_playerAppearingInScrollView:(void (^)(NSIndexPath * _Nonnull, CGFloat))zf_playerAppearingInScrollView {
+    objc_setAssociatedObject(self, @selector(zf_playerAppearingInScrollView), zf_playerAppearingInScrollView, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
 - (void)setZf_playerDidAppearInScrollView:(void (^)(NSIndexPath * _Nonnull))zf_playerDidAppearInScrollView {
     objc_setAssociatedObject(self, @selector(zf_playerDidAppearInScrollView), zf_playerDidAppearInScrollView, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
@@ -518,20 +596,12 @@ UIKIT_STATIC_INLINE void Hook_Method(Class originalClass, SEL originalSel, Class
     objc_setAssociatedObject(self, @selector(zf_playerWillDisappearInScrollView), zf_playerWillDisappearInScrollView, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
-- (void)setZf_playerDisappearHalfInScrollView:(void (^)(NSIndexPath * _Nonnull))zf_playerDisappearHalfInScrollView {
-    objc_setAssociatedObject(self, @selector(zf_playerDisappearHalfInScrollView), zf_playerDisappearHalfInScrollView, OBJC_ASSOCIATION_COPY_NONATOMIC);
+- (void)setZf_playerWillAppearInScrollView:(void (^)(NSIndexPath * _Nonnull))zf_playerWillAppearInScrollView {
+    objc_setAssociatedObject(self, @selector(zf_playerWillAppearInScrollView), zf_playerWillAppearInScrollView, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
 - (void)setZf_playerDidDisappearInScrollView:(void (^)(NSIndexPath * _Nonnull))zf_playerDidDisappearInScrollView {
     objc_setAssociatedObject(self, @selector(zf_playerDidDisappearInScrollView), zf_playerDidDisappearInScrollView, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-
-- (void)setZf_scrollViewDidStopScrollCallback:(void (^)(NSIndexPath * _Nonnull))zf_scrollViewDidStopScrollCallback {
-    objc_setAssociatedObject(self, @selector(zf_scrollViewDidStopScrollCallback), zf_scrollViewDidStopScrollCallback, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-
-- (void)setZf_lastOffsetY:(CGFloat)zf_lastOffsetY {
-    objc_setAssociatedObject(self, @selector(zf_lastOffsetY), @(zf_lastOffsetY), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end
@@ -541,11 +611,11 @@ UIKIT_STATIC_INLINE void Hook_Method(Class originalClass, SEL originalSel, Class
 #pragma mark - getter
 
 - (NSIndexPath *)shouldPlayIndexPath {
-     return objc_getAssociatedObject(self, _cmd);
+    return objc_getAssociatedObject(self, _cmd);
 }
 
 - (void (^)(NSIndexPath * _Nonnull))scrollViewDidStopScroll {
-     return objc_getAssociatedObject(self, _cmd);
+    return objc_getAssociatedObject(self, _cmd);
 }
 
 #pragma mark - setter

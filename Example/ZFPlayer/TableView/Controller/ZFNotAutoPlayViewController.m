@@ -12,6 +12,7 @@
 #import <ZFPlayer-moolban/ZFAVPlayerManager.h>
 #import <ZFPlayer-moolban/ZFPlayerControlView.h>
 //#import <ZFPlayer-moolban/KSMediaPlayerManager.h>
+//#import <ZFPlayer-moolban/ZFIJKPlayerManager.h>
 
 #import "ZFTableViewCell.h"
 #import "ZFTableData.h"
@@ -23,12 +24,7 @@ static NSString *kIdentifier = @"kIdentifier";
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) ZFPlayerController *player;
 @property (nonatomic, strong) ZFPlayerControlView *controlView;
-@property (nonatomic, strong) ZFAVPlayerManager *playerManager;
-
-@property (nonatomic, assign) NSInteger count;
-
 @property (nonatomic, strong) NSMutableArray *dataSource;
-
 @property (nonatomic, strong) NSMutableArray *urls;
 
 @end
@@ -40,20 +36,25 @@ static NSString *kIdentifier = @"kIdentifier";
     self.view.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.tableView];
     [self requestData];
-    
+
     /// playerManager
-    self.playerManager = [[ZFAVPlayerManager alloc] init];
+    ZFAVPlayerManager *playerManager = [[ZFAVPlayerManager alloc] init];
+//    KSMediaPlayerManager *playerManager = [[KSMediaPlayerManager alloc] init];
+//    ZFIJKPlayerManager *playerManager = [[ZFIJKPlayerManager alloc] init];
     
-    /// player
-    self.player = [ZFPlayerController playerWithScrollView:self.tableView playerManager:self.playerManager containerViewTag:100];
+    /// player的tag值必须在cell里设置
+    self.player = [ZFPlayerController playerWithScrollView:self.tableView playerManager:playerManager containerViewTag:100];
     self.player.controlView = self.controlView;
     self.player.assetURLs = self.urls;
     self.player.shouldAutoPlay = NO;
+    /// 1.0是完全消失的时候
+    self.player.playerDisapperaPercent = 1.0;
     
     @weakify(self)
     self.player.orientationWillChange = ^(ZFPlayerController * _Nonnull player, BOOL isFullScreen) {
         @strongify(self)
         [self setNeedsStatusBarAppearanceUpdate];
+        [UIViewController attemptRotationToDeviceOrientation];
         self.tableView.scrollsToTop = !isFullScreen;
     };
     
@@ -73,15 +74,6 @@ static NSString *kIdentifier = @"kIdentifier";
     CGFloat y = CGRectGetMaxY(self.navigationController.navigationBar.frame);
     CGFloat h = CGRectGetMaxY(self.view.frame);
     self.tableView.frame = CGRectMake(0, y, self.view.frame.size.width, h-y);
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    @weakify(self)
-    [self.tableView zf_filterShouldPlayCellWhileScrolled:^(NSIndexPath *indexPath) {
-        @strongify(self)
-        [self playTheVideoAtIndexPath:indexPath scrollToTop:NO];
-    }];
 }
 
 - (void)requestData {
@@ -105,6 +97,13 @@ static NSString *kIdentifier = @"kIdentifier";
 
 - (BOOL)shouldAutorotate {
     return self.player.shouldAutorotate;
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    if (self.player.isFullScreen && self.player.orientationObserver.fullScreenMode == ZFFullScreenModeLandscape) {
+        return UIInterfaceOrientationMaskLandscape;
+    }
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -175,6 +174,9 @@ static NSString *kIdentifier = @"kIdentifier";
         } else {
             self.automaticallyAdjustsScrollViewInsets = NO;
         }
+        _tableView.estimatedRowHeight = 0;
+        _tableView.estimatedSectionFooterHeight = 0;
+        _tableView.estimatedSectionHeaderHeight = 0;
     }
     return _tableView;
 }

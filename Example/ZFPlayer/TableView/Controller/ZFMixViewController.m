@@ -10,6 +10,7 @@
 
 #import <ZFPlayer-moolban/ZFPlayer.h>
 #import <ZFPlayer-moolban/ZFAVPlayerManager.h>
+//#import <ZFPlayer-moolban/ZFIJKPlayerManager.h>
 //#import <ZFPlayer-moolban/KSMediaPlayerManager.h>
 #import <ZFPlayer-moolban/ZFPlayerControlView.h>
 
@@ -21,15 +22,9 @@ static NSString *kIdentifier = @"kIdentifier";
 static NSString *kDouYinIdentifier = @"douYinIdentifier";
 
 @interface ZFMixViewController () <UITableViewDelegate,UITableViewDataSource,ZFTableViewCellDelegate>
-
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) ZFPlayerController *player;
 @property (nonatomic, strong) ZFPlayerControlView *controlView;
-
-@property (nonatomic, strong) ZFAVPlayerManager *playerManager;
-
-@property (nonatomic, assign) NSInteger count;
-
 @property (nonatomic, strong) NSMutableArray *dataSource;
 
 @end
@@ -43,11 +38,15 @@ static NSString *kDouYinIdentifier = @"douYinIdentifier";
     [self requestData];
     
     /// playerManager
-    self.playerManager = [[ZFAVPlayerManager alloc] init];
+    ZFAVPlayerManager *playerManager = [[ZFAVPlayerManager alloc] init];
+//    KSMediaPlayerManager *playerManager = [[KSMediaPlayerManager alloc] init];
+//    ZFIJKPlayerManager *playerManager = [[ZFIJKPlayerManager alloc] init];
     
     /// player,tag值必须在cell里设置
-    self.player = [ZFPlayerController playerWithScrollView:self.tableView playerManager:self.playerManager containerViewTag:100];
+    self.player = [ZFPlayerController playerWithScrollView:self.tableView playerManager:playerManager containerViewTag:100];
     self.player.controlView = self.controlView;
+    /// 0.8是消失80%时候
+    self.player.playerDisapperaPercent = 0.8;
     
     @weakify(self)
     self.player.playerDidToEnd = ^(id  _Nonnull asset) {
@@ -58,6 +57,7 @@ static NSString *kDouYinIdentifier = @"douYinIdentifier";
     self.player.orientationWillChange = ^(ZFPlayerController * _Nonnull player, BOOL isFullScreen) {
         @strongify(self)
         [self setNeedsStatusBarAppearanceUpdate];
+        [UIViewController attemptRotationToDeviceOrientation];
         self.tableView.scrollsToTop = !isFullScreen;
     };
 }
@@ -95,6 +95,13 @@ static NSString *kDouYinIdentifier = @"douYinIdentifier";
 
 - (BOOL)shouldAutorotate {
     return self.player.shouldAutorotate;
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    if (self.player.isFullScreen && self.player.orientationObserver.fullScreenMode == ZFFullScreenModeLandscape) {
+        return UIInterfaceOrientationMaskLandscape;
+    }
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -176,6 +183,9 @@ static NSString *kDouYinIdentifier = @"douYinIdentifier";
         } else {
             self.automaticallyAdjustsScrollViewInsets = NO;
         }
+        _tableView.estimatedRowHeight = 0;
+        _tableView.estimatedSectionFooterHeight = 0;
+        _tableView.estimatedSectionHeaderHeight = 0;
         /// 停止的时候找出最合适的播放(只能找到设置了tag值cell)
         @weakify(self)
         _tableView.zf_scrollViewDidStopScrollCallback = ^(NSIndexPath * _Nonnull indexPath) {
