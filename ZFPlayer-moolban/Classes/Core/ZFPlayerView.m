@@ -23,6 +23,12 @@
 // THE SOFTWARE.
 
 #import "ZFPlayerView.h"
+#import "ZFPlayer.h"
+
+@interface ZFPlayerView ()
+
+@property (nonatomic, weak) UIView *fitView;
+@end
 
 @implementation ZFPlayerView
 
@@ -31,7 +37,6 @@
     if (self.userInteractionEnabled == NO || self.hidden == YES || self.alpha <= 0.01) return nil;
     // Determine if the touch point is out of reach
     if (![self pointInside:point withEvent:event]) return nil;
-    // Iterate through your child controls from behind to see if any child controls are better suited to respond to this event
     NSInteger count = self.subviews.count;
     for (NSInteger i = count - 1; i >= 0; i--) {
         UIView *childView = self.subviews[i];
@@ -41,7 +46,6 @@
             return fitView;
         }
     }
-    // Did ont find a better view than myself
     return self;
 }
 

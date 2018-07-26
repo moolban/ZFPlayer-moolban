@@ -26,7 +26,7 @@
 #import "ZFPortraitControlView.h"
 #import "ZFLandScapeControlView.h"
 #import "ZFPlayerMediaControl.h"
-#import "ZFLoadingView.h"
+#import "ZFSpeedLoadingView.h"
 
 @interface ZFPlayerControlView : UIView <ZFPlayerMediaControl>
 
@@ -35,7 +35,7 @@
 /// 横屏控制层的View
 @property (nonatomic, strong, readonly) ZFLandScapeControlView *landScapeControlView;
 /// 加载loading
-@property (nonatomic, strong, readonly) ZFLoadingView *activity;
+@property (nonatomic, strong, readonly) ZFSpeedLoadingView *activity;
 /// 快进快退View
 @property (nonatomic, strong, readonly) UIView *fastView;
 /// 快进快退进度progress

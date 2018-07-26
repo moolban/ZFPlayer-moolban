@@ -7,10 +7,12 @@
 //
 
 #import "ZFMixViewController.h"
+
 #import <ZFPlayer-moolban/ZFPlayer.h>
 #import <ZFPlayer-moolban/ZFAVPlayerManager.h>
 //#import <ZFPlayer-moolban/KSMediaPlayerManager.h>
 #import <ZFPlayer-moolban/ZFPlayerControlView.h>
+
 #import "ZFTableViewCell.h"
 #import "ZFTableData.h"
 #import "ZFOtherCell.h"
@@ -50,10 +52,7 @@ static NSString *kDouYinIdentifier = @"douYinIdentifier";
     @weakify(self)
     self.player.playerDidToEnd = ^(id  _Nonnull asset) {
         @strongify(self)
-        [self.player enterFullScreen:NO animated:YES];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.player.orientationObserver.duration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self.player stopCurrentPlayingCell];
-        });
+        [self.player stopCurrentPlayingCell];
     };
     
     self.player.orientationWillChange = ^(ZFPlayerController * _Nonnull player, BOOL isFullScreen) {
@@ -95,7 +94,7 @@ static NSString *kDouYinIdentifier = @"douYinIdentifier";
 }
 
 - (BOOL)shouldAutorotate {
-    return NO;
+    return self.player.shouldAutorotate;
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {

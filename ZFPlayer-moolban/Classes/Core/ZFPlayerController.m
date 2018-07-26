@@ -37,7 +37,6 @@
 @property (nonatomic, strong) ZFPlayerNotification *notification;
 @property (nonatomic, strong) id<ZFPlayerMediaPlayback> currentPlayerManager;
 @property (nonatomic, strong, nullable) UIScrollView *scrollView;
-@property (nonatomic, assign, getter=isPauseByUser) BOOL pauseByUser;
 @property (nonatomic, strong) UISlider *volumeViewSlider;
 @property (nonatomic, assign) NSTimeInterval currentTime;
 @property (nonatomic, assign) NSTimeInterval totalTime;
@@ -85,17 +84,12 @@
 }
 
 + (instancetype)playerWithPlayerManager:(id<ZFPlayerMediaPlayback>)playerManager containerView:(nonnull UIView *)containerView {
-    ZFPlayerController *player = [[self alloc] init];
-    player.currentPlayerManager = playerManager;
-    player.containerView = containerView;
+    ZFPlayerController *player = [[self alloc] initWithPlayerManager:playerManager containerView:containerView];
     return player;
 }
 
 + (instancetype)playerWithScrollView:(UIScrollView *)scrollView playerManager:(id<ZFPlayerMediaPlayback>)playerManager containerViewTag:(NSInteger)containerViewTag {
-    ZFPlayerController *player = [[self alloc] init];
-    player.scrollView = scrollView;
-    player.currentPlayerManager = playerManager;
-    player.containerViewTag = containerViewTag;
+    ZFPlayerController *player = [[self alloc] initWithScrollView:scrollView playerManager:playerManager containerViewTag:containerViewTag];
     return player;
 }
 
@@ -136,6 +130,8 @@
     self.currentPlayerManager.playerPrepareToPlay = ^(id<ZFPlayerMediaPlayback>  _Nonnull asset, NSURL * _Nonnull assetURL) {
         @strongify(self)
         self.currentPlayerManager.view.hidden = NO;
+        [self.notification addNotification];
+        if (self.allowOrentitaionRotation) [self addDeviceOrientationObserver];
         if ([self.controlView respondsToSelector:@selector(videoPlayer:prepareToPlay:)]) {
             [self.controlView videoPlayer:self prepareToPlay:assetURL];
         }
@@ -162,6 +158,14 @@
             [self.controlView videoPlayerPlayEnd:self];
         }
     };
+    
+    self.currentPlayerManager.playerPlayFailed = ^(id<ZFPlayerMediaPlayback>  _Nonnull asset, id  _Nonnull error) {
+        @strongify(self)
+        if ([self.controlView respondsToSelector:@selector(videoPlayerPlayFailed:error:)]) {
+            [self.controlView videoPlayerPlayFailed:self error:error];
+        }
+        if (self.playerPlayFailed) self.playerPlayFailed(asset,error);
+    };
 }
 
 - (void)layoutPlayerSubViews {
@@ -184,16 +188,15 @@
         _notification.willResignActive = ^(ZFPlayerNotification * _Nonnull registrar) {
             @strongify(self)
             if (self.pauseWhenAppResignActive && self.currentPlayerManager.isPlaying) {
-                [self.currentPlayerManager pause];
-                self.pauseByUser = YES;
+                self.pauseByEvent = YES;
             }
+            if (self.isFullScreen && !self.isLockedScreen) self.orientationObserver.lockedScreen = YES;
         };
         _notification.didBecomeActive = ^(ZFPlayerNotification * _Nonnull registrar) {
             @strongify(self)
-            if (self.isPauseByUser) {
-                [self.currentPlayerManager play];
-                self.pauseByUser = NO;
-            }
+            if (self.isPauseByEvent) self.pauseByEvent = NO;
+            if (self.isFullScreen && !self.isLockedScreen) self.orientationObserver.lockedScreen = NO;
+
         };
         _notification.oldDeviceUnavailable = ^(ZFPlayerNotification * _Nonnull registrar) {
             @strongify(self)
@@ -214,7 +217,6 @@
     self.gestureControl.disableTypes = self.disableGestureTypes;
     [self.gestureControl addGestureToView:currentPlayerManager.view];
     [self playerManagerCallbcak];
-    [self.notification addNotification];
 }
 
 - (void)setContainerView:(UIView *)containerView {
@@ -224,7 +226,6 @@
     [containerView addSubview:self.currentPlayerManager.view];
     self.currentPlayerManager.view.frame = containerView.bounds;
     self.currentPlayerManager.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self.orientationObserver addDeviceOrientationObserver];
 }
 
 - (void)setControlView:(UIView<ZFPlayerMediaControl> *)controlView {
@@ -261,9 +262,12 @@
 - (void)stop {
     [self.notification removeNotification];
     [self.orientationObserver removeDeviceOrientationObserver];
+    if (self.isFullScreen) {
+        [self.orientationObserver exitFullScreenWithAnimated:NO];
+    }
     [self.currentPlayerManager stop];
-    
     [self.currentPlayerManager.view removeFromSuperview];
+    self.currentPlayerManager.view.hidden = YES;
 }
 
 - (void)replaceCurrentPlayerManager:(id<ZFPlayerMediaPlayback>)manager {
@@ -331,10 +335,11 @@
 }
 
 - (BOOL)isWWANAutoPlay {
-    NSNumber *number = objc_getAssociatedObject(self, _cmd);
-    if (number) return number.boolValue;
-    self.WWANAutoPlay = YES;
-    return YES;
+   return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+- (BOOL)isPauseByEvent {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
 - (float)brightness {
@@ -372,7 +377,11 @@
     return YES;
 }
 
-- (void (^)(id _Nonnull))playerDidToEnd {
+- (void (^)(id<ZFPlayerMediaPlayback> _Nonnull))playerDidToEnd {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void (^)(id<ZFPlayerMediaPlayback> _Nonnull, id _Nonnull))playerPlayFailed {
     return objc_getAssociatedObject(self, _cmd);
 }
 
@@ -423,12 +432,25 @@
     [UIScreen mainScreen].brightness = brightness;
 }
 
+- (void)setPauseByEvent:(BOOL)pauseByEvent {
+    objc_setAssociatedObject(self, @selector(isPauseByEvent), @(pauseByEvent), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if (pauseByEvent) {
+        [self.currentPlayerManager pause];
+    } else {
+        [self.currentPlayerManager play];
+    }
+}
+
 - (void)setPauseWhenAppResignActive:(BOOL)pauseWhenAppResignActive {
     objc_setAssociatedObject(self, @selector(pauseWhenAppResignActive), @(pauseWhenAppResignActive), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (void)setPlayerDidToEnd:(void (^)(id _Nonnull))playerDidToEnd {
+- (void)setPlayerDidToEnd:(void (^)(id<ZFPlayerMediaPlayback> _Nonnull))playerDidToEnd {
     objc_setAssociatedObject(self, @selector(playerDidToEnd), playerDidToEnd, OBJC_ASSOCIATION_COPY);
+}
+
+- (void)setPlayerPlayFailed:(void (^)(id<ZFPlayerMediaPlayback> _Nonnull, id _Nonnull))playerPlayFailed {
+    objc_setAssociatedObject(self, @selector(playerPlayFailed), playerPlayFailed, OBJC_ASSOCIATION_COPY);
 }
 
 - (void)setCurrentPlayIndex:(NSInteger)currentPlayIndex {
@@ -465,6 +487,18 @@
         orientation = fullScreen? UIInterfaceOrientationLandscapeRight : UIInterfaceOrientationPortrait;
         [self.orientationObserver enterLandscapeFullScreen:orientation animated:animated];
     }
+}
+
+- (BOOL)isNeedAdaptiveiOS8Rotation {
+    NSArray<NSString *> *versionStrArr = [[UIDevice currentDevice].systemVersion componentsSeparatedByString:@"."];
+    int firstVer = [[versionStrArr objectAtIndex:0] intValue];
+    int secondVer = [[versionStrArr objectAtIndex:1] intValue];
+    if (firstVer == 8) {
+        if (secondVer >= 1 && secondVer <= 3) {
+            return YES;
+        }
+    }
+    return NO;
 }
 
 #pragma mark - getter
@@ -513,15 +547,22 @@
 }
 
 - (BOOL)isStatusBarHidden {
-    return self.orientationObserver.isStatusBarHidden;
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
 - (BOOL)isLockedScreen {
-    return self.orientationObserver.isLockedScreen;
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
 - (BOOL)shouldAutorotate {
-    return self.orientationObserver.shouldAutorotate;
+    return [self isNeedAdaptiveiOS8Rotation];
+}
+
+- (BOOL)allowOrentitaionRotation {
+    NSNumber *number = objc_getAssociatedObject(self, _cmd);
+    if (number) return number.boolValue;
+    self.allowOrentitaionRotation = YES;
+    return YES;
 }
 
 #pragma mark - setter
@@ -547,9 +588,8 @@
     }
 }
 
-- (void)setShouldAutorotate:(BOOL)shouldAutorotate {
-    objc_setAssociatedObject(self, @selector(shouldAutorotate), @(shouldAutorotate), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    self.orientationObserver.shouldAutorotate = shouldAutorotate;
+- (void)setAllowOrentitaionRotation:(BOOL)allowOrentitaionRotation {
+    objc_setAssociatedObject(self, @selector(allowOrentitaionRotation), @(allowOrentitaionRotation), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end
@@ -750,7 +790,7 @@
         UIView *cell = [self.scrollView zf_getCellForIndexPath:playingIndexPath];
         self.containerView = [cell viewWithTag:self.containerViewTag];
         [self.orientationObserver cellModelRotateView:self.currentPlayerManager.view rotateViewAtCell:cell playerViewTag:self.containerViewTag];
-        [self.orientationObserver addDeviceOrientationObserver];
+        if (self.allowOrentitaionRotation) [self addDeviceOrientationObserver];
         self.scrollView.zf_playingIndexPath = playingIndexPath;
     }
 }

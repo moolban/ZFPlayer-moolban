@@ -1,11 +1,11 @@
 PODS:
-  - ZFPlayer-moolban (3.0.7.1):
-    - ZFPlayer-moolban/Core (= 3.0.7.1)
-  - ZFPlayer-moolban/AVPlayer (3.0.7.1):
+  - ZFPlayer-moolban (3.1.0.1):
+    - ZFPlayer-moolban/Core (= 3.1.0.1)
+  - ZFPlayer-moolban/AVPlayer (3.1.0.1):
     - ZFPlayer-moolban/Core
-  - ZFPlayer-moolban/ControlView (3.0.7.1):
+  - ZFPlayer-moolban/ControlView (3.1.0.1):
     - ZFPlayer-moolban/Core
-  - ZFPlayer-moolban/Core (3.0.7.1)
+  - ZFPlayer-moolban/Core (3.1.0.1)
 
 DEPENDENCIES:
   - ZFPlayer-moolban (from `../`)
@@ -17,8 +17,8 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  ZFPlayer-moolban: 5f360d0d6020d55385d340778a6bf5aba6e5b0ae
+  ZFPlayer-moolban: e815498682f5851b5a3a7a9164a3fdfce1c4baf4
 
-PODFILE CHECKSUM: 81998541a801ed69aa335aa691f4ffcf2b7a910a
+PODFILE CHECKSUM: 0e1e5190d72a973e4c1ca8272dabeba59015fc93
 
 COCOAPODS: 1.5.3

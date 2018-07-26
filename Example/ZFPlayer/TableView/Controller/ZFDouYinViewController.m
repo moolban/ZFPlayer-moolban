@@ -41,9 +41,9 @@ static NSString *kIdentifier = @"kIdentifier";
     /// player,tag值必须在cell里设置
     self.player = [ZFPlayerController playerWithScrollView:self.tableView playerManager:self.playerManager containerViewTag:100];
     self.player.assetURLs = self.urls;
-    self.player.shouldAutorotate = NO;
     self.player.disableGestureTypes = ZFPlayerDisableGestureTypesDoubleTap | ZFPlayerDisableGestureTypesPan |ZFPlayerDisableGestureTypesPinch;
     self.player.controlView = self.controlView;
+    self.player.allowOrentitaionRotation = NO;
     @weakify(self)
     self.player.playerDidToEnd = ^(id  _Nonnull asset) {
         @strongify(self)
@@ -132,13 +132,10 @@ static NSString *kIdentifier = @"kIdentifier";
 
 /// play the video
 - (void)playTheVideoAtIndexPath:(NSIndexPath *)indexPath scrollToTop:(BOOL)scrollToTop {
-    @weakify(self)
-    [self.player playTheIndexPath:indexPath scrollToTop:scrollToTop completionHandler:^{
-        @strongify(self)
-        [self.controlView resetControlView];
-        ZFTableData *data = self.dataSource[indexPath.row];
-        [self.controlView showTitle:data.title coverURLString:data.thumbnail_url];
-    }];
+    [self.player playTheIndexPath:indexPath scrollToTop:scrollToTop];
+    [self.controlView resetControlView];
+    ZFTableData *data = self.dataSource[indexPath.row];
+    [self.controlView showTitle:data.title coverURLString:data.thumbnail_url];
 }
 
 #pragma mark - getter

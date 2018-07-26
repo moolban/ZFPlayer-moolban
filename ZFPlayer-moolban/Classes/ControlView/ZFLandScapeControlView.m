@@ -25,6 +25,11 @@
 #import "ZFLandScapeControlView.h"
 #import "UIView+ZFFrame.h"
 #import "ZFUtilities.h"
+#if __has_include(<ZFPlayer/ZFPlayer.h>)
+#import <ZFPlayer/ZFPlayer.h>
+#else
+#import "ZFPlayer.h"
+#endif
 
 @interface ZFLandScapeControlView () <ZFSliderViewDelegate>
 
@@ -169,19 +174,28 @@
 
 #pragma mark - ZFSliderViewDelegate
 
-- (void)sliderTouchBegin:(float)value {
+- (void)sliderTouchBegan:(float)value {
     self.slider.isdragging = YES;
 }
 
 - (void)sliderTouchEnded:(float)value {
     self.slider.isdragging = YES;
-    [self.player seekToTime:self.player.totalTime*value completionHandler:^(BOOL finished) {
-        self.slider.isdragging = NO;
-    }];
+    if (self.player.totalTime > 0) {
+        @weakify(self)
+        [self.player seekToTime:self.player.totalTime*value completionHandler:^(BOOL finished) {
+            @strongify(self)
+            self.slider.isdragging = NO;
+            [self.player.currentPlayerManager play];
+        }];
+    }
     if (self.sliderValueChanged) self.sliderValueChanged(value);
 }
 
 - (void)sliderValueChanged:(float)value {
+    if (self.player.totalTime == 0) {
+        self.slider.value = 0;
+        return;
+    }
     self.slider.isdragging = YES;
     NSString *currentTimeString = [ZFUtilities convertTimeSecond:self.player.totalTime*value];
     self.currentTimeLabel.text = currentTimeString;
@@ -190,9 +204,16 @@
 
 - (void)sliderTapped:(float)value {
     self.slider.isdragging = YES;
-    [self.player seekToTime:self.player.totalTime*value completionHandler:^(BOOL finished) {
-        self.slider.isdragging = NO;
-    }];
+    if (self.player.totalTime > 0) {
+        @weakify(self)
+        [self.player seekToTime:self.player.totalTime*value completionHandler:^(BOOL finished) {
+            @strongify(self)
+            self.slider.isdragging = NO;
+            [self.player.currentPlayerManager play];
+        }];
+    } else {
+        self.slider.value = 0;
+    }
 }
 
 - (void)showControlView {

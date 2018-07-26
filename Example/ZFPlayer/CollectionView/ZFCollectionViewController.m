@@ -9,6 +9,7 @@
 #import "ZFCollectionViewController.h"
 #import "ZFCollectionViewCell.h"
 #import "ZFTableData.h"
+
 #import <ZFPlayer-moolban/ZFPlayer.h>
 #import <ZFPlayer-moolban/ZFAVPlayerManager.h>
 #import <ZFPlayer-moolban/ZFPlayerControlView.h>
@@ -31,16 +32,6 @@ static NSString * const reuseIdentifier = @"collectionViewCell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-//    UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
-//    CGFloat margin = 5;
-//    CGFloat itemWidth = self.view.frame.size.width/2 - 2*margin;
-//    CGFloat itemHeight = itemWidth*9/16 + 30;
-//    layout.itemSize = CGSizeMake(itemWidth, itemHeight);
-//    layout.sectionInset = UIEdgeInsetsMake(10, margin, 10, margin);
-//    layout.minimumLineSpacing = 5;
-//    layout.minimumInteritemSpacing = 5;
-//    self.collectionView.collectionViewLayout = layout;
-//    [self.collectionView registerClass:[ZFCollectionViewCell class] forCellWithReuseIdentifier:reuseIdentifier];
     self.view.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.collectionView];
     [self requestData];
@@ -147,6 +138,11 @@ static NSString * const reuseIdentifier = @"collectionViewCell";
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     ZFCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     cell.data = self.dataSource[indexPath.row];
+    @weakify(self)
+    cell.playBlock = ^(UIButton *sender) {
+        @strongify(self)
+        [self playTheVideoAtIndexPath:indexPath scrollToTop:NO];
+    };
     return cell;
 }
 

@@ -7,10 +7,13 @@
 //
 
 #import "ZFKeyboardViewController.h"
+
 #import <ZFPlayer-moolban/ZFPlayer.h>
 #import <ZFPlayer-moolban/ZFAVPlayerManager.h>
 //#import <ZFPlayer-moolban/KSMediaPlayerManager.h>
 #import <ZFPlayer-moolban/ZFPlayerControlView.h>
+//#import <ZFPlayer-moolban/ZFIJKPlayerManager.h>
+#import <ZFPlayer-moolban/UIView+ZFFrame.h>
 
 @interface ZFKeyboardViewController ()
 @property (nonatomic, strong) ZFPlayerController *player;
@@ -32,15 +35,17 @@
     
     ZFAVPlayerManager *playerManager = [[ZFAVPlayerManager alloc] init];
 //    KSMediaPlayerManager *playerManager = [[KSMediaPlayerManager alloc] init];
+//    ZFIJKPlayerManager *playerManager = [[ZFIJKPlayerManager alloc] init];
     /// 播放器相关
     self.player = [ZFPlayerController playerWithPlayerManager:playerManager containerView:self.containerView];
     self.player.controlView = self.controlView;
-    __weak typeof(self) weakSelf = self;
+    @weakify(self)
     self.player.orientationWillChange = ^(ZFPlayerController * _Nonnull player, BOOL isFullScreen) {
-        [weakSelf.textField resignFirstResponder];
-        [weakSelf setNeedsStatusBarAppearanceUpdate];
+        @strongify(self)
+        [self.textField resignFirstResponder];
+        [self setNeedsStatusBarAppearanceUpdate];
     };
-    NSString *URLString = [@"http://tb-video.bdstatic.com/videocp/12045395_f9f87b84aaf4ff1fee62742f2d39687f.mp4" stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    NSString *URLString = [@"http://flv3.bn.netease.com/tvmrepo/2018/6/H/9/EDJTRBEH9/SD/EDJTRBEH9-mobile.mp4" stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     playerManager.assetURL = [NSURL URLWithString:URLString];
     
     [self.controlView showTitle:@"视频标题" coverURLString:@"http://imgsrc.baidu.com/forum/eWH%3D240%2C176/sign=183252ee8bd6277ffb784f351a0c2f1c/5d6034a85edf8db15420ba310523dd54564e745d.jpg" fullScreenMode:ZFFullScreenModeLandscape];
@@ -54,10 +59,12 @@
     CGFloat h = w*9/16;
     self.containerView.frame = CGRectMake(x, y, w, h);
     
-    self.textField.frame = CGRectMake(0, 0, 200, 35);
-    self.textField.center = self.controlView.center;
-    
-    
+    w = 200;
+    h = 35;
+    x = (self.containerView.width - w)/2;
+    y = (self.containerView.height - h)/2;
+    self.textField.frame = CGRectMake(x, y, w, h);
+
     w = 44;
     h = w;
     x = (CGRectGetWidth(self.containerView.frame)-w)/2;
@@ -81,7 +88,7 @@
 }
 
 - (BOOL)shouldAutorotate {
-    return NO;
+    return self.player.shouldAutorotate;
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {

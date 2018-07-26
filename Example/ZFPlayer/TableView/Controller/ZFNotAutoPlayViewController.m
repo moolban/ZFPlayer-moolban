@@ -7,10 +7,12 @@
 //
 
 #import "ZFNotAutoPlayViewController.h"
+
 #import <ZFPlayer-moolban/ZFPlayer.h>
 #import <ZFPlayer-moolban/ZFAVPlayerManager.h>
 #import <ZFPlayer-moolban/ZFPlayerControlView.h>
 //#import <ZFPlayer-moolban/KSMediaPlayerManager.h>
+
 #import "ZFTableViewCell.h"
 #import "ZFTableData.h"
 
@@ -61,10 +63,7 @@ static NSString *kIdentifier = @"kIdentifier";
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.player.playingIndexPath.row+1 inSection:0];
             [self playTheVideoAtIndexPath:indexPath scrollToTop:YES];
         } else if (self.player.isFullScreen) {
-            [self.player enterFullScreen:NO animated:YES];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.player.orientationObserver.duration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self.player stopCurrentPlayingCell];
-            });
+            [self.player stopCurrentPlayingCell];
         }
     };
 }
@@ -105,7 +104,7 @@ static NSString *kIdentifier = @"kIdentifier";
 }
 
 - (BOOL)shouldAutorotate {
-    return NO;
+    return self.player.shouldAutorotate;
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {

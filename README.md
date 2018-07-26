@@ -4,9 +4,10 @@
 </p>
 
 <p align="center">
-<a href="https://travis-ci.org/renzifeng/ZFPlayer"><img src="https://travis-ci.org/renzifeng/ZFPlayer.svg?branch=master"></a>
 <a href="https://img.shields.io/cocoapods/v/ZFPlayer.svg"><img src="https://img.shields.io/cocoapods/v/ZFPlayer.svg"></a>
-<a href="https://img.shields.io/cocoapods/v/ZFPlayer.svg"><img src="https://img.shields.io/github/license/renzifeng/ZFPlayer.svg?style=flat"></a>
+<a href="https://img.shields.io/github/license/renzifeng/ZFPlayer.svg?style=flat"><img src="https://img.shields.io/github/license/renzifeng/ZFPlayer.svg?style=flat"></a>
+<a href="https://img.shields.io/cocoapods/dt/ZFPlayer.svg?maxAge=2592000"><img src="https://img.shields.io/cocoapods/dt/ZFPlayer.svg?maxAge=2592000"></a>
+<a href="https://img.shields.io/cocoapods/at/ZFPlayer.svg?maxAge=2592000"><img src="https://img.shields.io/cocoapods/at/ZFPlayer.svg?maxAge=2592000"></a>
 <a href="http://cocoadocs.org/docsets/ZFPlayer"><img src="https://img.shields.io/cocoapods/p/ZFPlayer.svg?style=flat"></a>
 <a href="http://weibo.com/zifeng1300"><img src="https://img.shields.io/badge/weibo-@%E4%BB%BB%E5%AD%90%E4%B8%B0-yellow.svg?style=flat"></a>
 </p>
@@ -29,32 +30,32 @@ Before this, you used ZFPlayer, are you worried about encapsulating avplayer ins
 ZFPlayer is available through [CocoaPods](https://cocoapods.org). To install it,use player template simply add the following line to your Podfile:
 
 ```objc
-pod 'ZFPlayer', '~> 3.0.8'
+pod 'ZFPlayer', '~> 3.0'
 ```
 
 Use default controlView simply add the following line to your Podfile:
 
 ```objc
-pod 'ZFPlayer/ControlView', '~> 3.0.8'
+pod 'ZFPlayer/ControlView', '~> 3.0'
 ```
 Use AVPlayer simply add the following line to your Podfile:
 
 ```objc
-pod 'ZFPlayer/AVPlayer', '~> 3.0.8'
+pod 'ZFPlayer/AVPlayer', '~> 3.0'
 ```
 如果使用AVPlayer边下边播可以参考使用[KTVHTTPCache](https://github.com/ChangbaDevs/KTVHTTPCache)
 
 Use ijkplayer simply add the following line to your Podfile:
 
 ```objc
-pod 'ZFPlayer/ijkplayer', '~> 3.0.8'
+pod 'ZFPlayer/ijkplayer', '~> 3.0'
 ```
 [IJKMediaFramework SDK](https://gitee.com/renzifeng/IJKMediaFramework) support cocoapods
 
 Use KSYMediaPlayer simply add the following line to your Podfile:
 
 ```objc
-pod 'ZFPlayer/KSYMediaPlayer', '~> 3.0.8'
+pod 'ZFPlayer/KSYMediaPlayer', '~> 3.0'
 ```
 [KSYMediaPlayer SDK](https://github.com/ksvc/KSYMediaPlayer_iOS) support cocoapods
 
@@ -122,7 +123,7 @@ Rotate the video the viewController must implement
 
 ```objc
 - (BOOL)shouldAutorotate {
-    return NO;
+    return player.shouldAutorotate;
 }
 ```
 
@@ -133,7 +134,6 @@ Rotate the video the viewController must implement
 ## Reference
 - https://github.com/Bilibili/ijkplayer
 - https://github.com/changsanjiang/SJVideoPlayer
-- https://github.com/ksvc/KSYMediaPlayer_iOS
 
 ## Author
 

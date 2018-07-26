@@ -57,15 +57,8 @@ static NSString *kIdentifier = @"kIdentifier";
     
     self.player.playerDidToEnd = ^(id  _Nonnull asset) {
         @strongify(self)
-        if (!self.player.isFullScreen) {
-            [self.player stopCurrentPlayingCell];
-            [self.controlView resetControlView];
-        } else {
-            [self.player enterFullScreen:NO animated:YES];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.player.orientationObserver.duration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self.player stopCurrentPlayingCell];
-            });
-        }
+        [self.controlView resetControlView];
+        [self.player stopCurrentPlayingCell];
     };
     
     /// 以下设置滑出屏幕后不停止播放
@@ -76,6 +69,10 @@ static NSString *kIdentifier = @"kIdentifier";
     CGFloat x = ZFPlayer_ScreenWidth - w - margin;
     CGFloat y = ZFPlayer_ScreenHeight - h - margin;
     self.player.smallFloatView.frame = CGRectMake(x, y, w, h);
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [self.player stopCurrentPlayingCell];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -114,7 +111,7 @@ static NSString *kIdentifier = @"kIdentifier";
 }
 
 - (BOOL)shouldAutorotate {
-    return NO;
+    return self.player.shouldAutorotate;
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {

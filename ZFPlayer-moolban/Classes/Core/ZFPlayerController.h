@@ -142,9 +142,15 @@ NS_ASSUME_NONNULL_BEGIN
 /// default is YES.
 @property (nonatomic) BOOL pauseWhenAppResignActive;
 
-/// When the player is play end.
-@property (nonatomic, copy, nullable) void(^playerDidToEnd)(id asset);
+/// When the player is playing, it is paused by some event,not by user click to pause
+/// For example, when the player is playing, application goes into the background or pushes to another viewController
+@property (nonatomic, getter=isPauseByEvent) BOOL pauseByEvent;
 
+/// When the player is play end.
+@property (nonatomic, copy, nullable) void(^playerDidToEnd)(id<ZFPlayerMediaPlayback> asset);
+
+/// The block invoked when the player play failed.
+@property (nonatomic, copy, nullable) void(^playerPlayFailed)(id<ZFPlayerMediaPlayback> asset, id error);
 
 /// Play the next url ,while the `assetURLs` is not NULL.
 - (void)playTheNext;
@@ -173,8 +179,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) ZFOrientationObserver *orientationObserver;
 
 /// Whether automatic screen rotation is supported.
+/// iOS8.1~iOS8.3 the value is YES, other iOS version the value is NO.
+/// This property is used for the return value of UIViewController `shouldAutorotate` method.
+@property (nonatomic, readonly) BOOL shouldAutorotate;
+
+/// Whether allow the video orientation rotate.
 /// default is YES.
-@property (nonatomic) BOOL shouldAutorotate;
+@property (nonatomic) BOOL allowOrentitaionRotation;
 
 /// When ZFFullScreenMode is ZFFullScreenModeLandscape the orientation is LandscapeLeft or LandscapeRight, this value is YES.
 /// When ZFFullScreenMode is ZFFullScreenModePortrait, while the player fullSceen this value is YES.

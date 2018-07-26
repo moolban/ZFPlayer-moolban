@@ -25,6 +25,11 @@
 #import "ZFPortraitControlView.h"
 #import "UIView+ZFFrame.h"
 #import "ZFUtilities.h"
+#if __has_include(<ZFPlayer/ZFPlayer.h>)
+#import <ZFPlayer/ZFPlayer.h>
+#else
+#import "ZFPlayer.h"
+#endif
 
 @interface ZFPortraitControlView () <ZFSliderViewDelegate>
 /// 返回按钮
@@ -59,7 +64,6 @@
         // 添加子控件
         [self addSubview:self.topToolView];
         [self addSubview:self.bottomToolView];
-        [self addSubview:self.topToolView];
         [self addSubview:self.playOrPauseBtn];
         [self.topToolView addSubview:self.titleLabel];
         [self.bottomToolView addSubview:self.currentTimeLabel];
@@ -84,19 +88,28 @@
 
 #pragma mark - ZFSliderViewDelegate
 
-- (void)sliderTouchBegin:(float)value {
+- (void)sliderTouchBegan:(float)value {
     self.slider.isdragging = YES;
 }
 
 - (void)sliderTouchEnded:(float)value {
     self.slider.isdragging = YES;
-    [self.player seekToTime:self.player.totalTime*value completionHandler:^(BOOL finished) {
-        self.slider.isdragging = NO;
-    }];
+    if (self.player.totalTime > 0) {
+        @weakify(self)
+        [self.player seekToTime:self.player.totalTime*value completionHandler:^(BOOL finished) {
+            @strongify(self)
+            self.slider.isdragging = NO;
+            [self.player.currentPlayerManager play];
+        }];
+    }
     if (self.sliderValueChanged) self.sliderValueChanged(value);
 }
 
 - (void)sliderValueChanged:(float)value {
+    if (self.player.totalTime == 0) {
+        self.slider.value = 0;
+        return;
+    }
     self.slider.isdragging = YES;
     NSString *currentTimeString = [ZFUtilities convertTimeSecond:self.player.totalTime*value];
     self.currentTimeLabel.text = currentTimeString;
@@ -105,9 +118,16 @@
 
 - (void)sliderTapped:(float)value {
     self.slider.isdragging = YES;
-    [self.player seekToTime:self.player.totalTime*value completionHandler:^(BOOL finished) {
-        self.slider.isdragging = NO;
-    }];
+    if (self.player.totalTime > 0) {
+        @weakify(self)
+        [self.player seekToTime:self.player.totalTime*value completionHandler:^(BOOL finished) {
+            @strongify(self)
+            self.slider.isdragging = NO;
+            [self.player.currentPlayerManager play];
+        }];
+    } else {
+        self.slider.value = 0;
+    }
 }
 
 #pragma mark - action

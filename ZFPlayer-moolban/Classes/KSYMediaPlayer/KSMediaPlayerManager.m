@@ -65,6 +65,7 @@ static NSString *const kCurrentPlaybackTime = @"currentPlaybackTime";
 @synthesize rate                           = _rate;
 @synthesize isPreparedToPlay               = _isPreparedToPlay;
 @synthesize scalingMode                    = _scalingMode;
+@synthesize playerPlayFailed               = _playerPlayFailed;
 
 - (void)dealloc {
     [self destory];
@@ -144,7 +145,8 @@ static NSString *const kCurrentPlaybackTime = @"currentPlaybackTime";
 }
 
 - (void)reloadPlayer {
-    [self.player reload:self.assetURL];
+    self.seekTime = self.currentTime;
+    [self prepareToPlay];
 }
 
 - (void)initializePlayer {
@@ -238,7 +240,10 @@ static NSString *const kCurrentPlaybackTime = @"currentPlaybackTime";
 /// 播放器初始化视频文件完成通知
 - (void)videoPrepared:(NSNotification *)notify {
     self.player.shouldMute = self.muted;
-    if (self.seekTime) [self seekToTime:self.seekTime completionHandler:nil];
+    if (self.seekTime) {
+        [self seekToTime:self.seekTime completionHandler:nil];
+        self.seekTime = 0; // 滞空, 防止下次播放出错
+    }
     [self play];
     /// 需要延迟改为ok状态，不然显示会有一点问题。
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -248,13 +253,15 @@ static NSString *const kCurrentPlaybackTime = @"currentPlaybackTime";
 
 /// 播放完成通知。视频正常播放完成时触发。
 - (void)videoFinish:(NSNotification *)notify {
-    NSInteger reason = [[[notify userInfo] valueForKey:MPMoviePlayerPlaybackDidFinishReasonUserInfoKey] integerValue];
+    NSInteger reason = [[notify.userInfo valueForKey:MPMoviePlayerPlaybackDidFinishReasonUserInfoKey] integerValue];
     if (reason == MPMovieFinishReasonPlaybackEnded) {
         self.playState = ZFPlayerPlayStatePlayStopped;
         if (self.playerDidToEnd) self.playerDidToEnd(self);
     } else if (reason == MPMovieFinishReasonPlaybackError) {
-        NSLog(@"%@", [NSString stringWithFormat:@"player Error : %@", [[notify userInfo] valueForKey:@"error"]]);
         self.playState = ZFPlayerPlayStatePlayFailed;
+        NSString *error = [notify.userInfo valueForKey:@"error"];
+        ZFPlayerLog(@"player Error : %@", error);
+        if (self.playerPlayFailed) self.playerPlayFailed(self, error);
     } else if (reason == MPMovieFinishReasonUserExited){
         /// player userExited
     }
@@ -272,7 +279,7 @@ static NSString *const kCurrentPlaybackTime = @"currentPlaybackTime";
 
 - (void)bufferChange:(NSNotification *)notify {
     if (self.player.loadState == MPMovieLoadStateStalled) { /// 播放器开始缓冲视频时发送该通知
-        NSLog(@"player start caching");
+        ZFPlayerLog(@"player start caching");
         //    } else if (self.player.loadState == MPMovieLoadStatePlayable || self.player.loadState == MPMovieLoadStatePlaythroughOK) { /// 播放器结束缓冲视频时发送该通知
         self.loadState = ZFPlayerLoadStateStalled;
     } else {
@@ -287,22 +294,22 @@ static NSString *const kCurrentPlaybackTime = @"currentPlaybackTime";
 
 /// 播放状态改变
 - (void)playbackStateDidChange:(NSNotification *)notify {
-    NSLog(@"player playback state: %ld", (long)self.player.playbackState);
+    ZFPlayerLog(@"player playback state: %ld", (long)self.player.playbackState);
 }
 
 /// 播放解码状态
 - (void)playbackStatusChange:(NSNotification *)notify {
     int status = [[[notify userInfo] valueForKey:MPMoviePlayerPlaybackStatusUserInfoKey] intValue];
     if (MPMovieStatusVideoDecodeWrong == status) {
-        NSLog(@"Video Decode Wrong!\n");
+        ZFPlayerLog(@"Video Decode Wrong!\n");
     } else if(MPMovieStatusAudioDecodeWrong == status) {
-        NSLog(@"Audio Decode Wrong!\n");
+        ZFPlayerLog(@"Audio Decode Wrong!\n");
     } else if (MPMovieStatusHWCodecUsed == status ) {
-        NSLog(@"Hardware Codec used\n");
+        ZFPlayerLog(@"Hardware Codec used\n");
     } else if (MPMovieStatusSWCodecUsed == status ) {
-        NSLog(@"Software Codec used\n");
+        ZFPlayerLog(@"Software Codec used\n");
     } else if(MPMovieStatusDLCodecUsed == status) {
-        NSLog(@"AVSampleBufferDisplayLayer  Codec used");
+        ZFPlayerLog(@"AVSampleBufferDisplayLayer  Codec used");
     }
 }
 
