@@ -34,12 +34,11 @@ static NSString *kIdentifier = @"kIdentifier";
     self.view.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.tableView];
     [self requestData];
-    self.navigationItem.title = @"Dou yin style";
     
     /// playerManager
     self.playerManager = [[ZFAVPlayerManager alloc] init];
     
-    /// player
+    /// player,tag值必须在cell里设置
     self.player = [ZFPlayerController playerWithScrollView:self.tableView playerManager:self.playerManager containerViewTag:100];
     self.player.assetURLs = self.urls;
     self.player.shouldAutorotate = NO;
@@ -159,7 +158,7 @@ static NSString *kIdentifier = @"kIdentifier";
         }
         /// 停止的时候找出最合适的播放
         @weakify(self)
-        _tableView.scrollViewDidStopScroll = ^(NSIndexPath * _Nonnull indexPath) {
+        _tableView.zf_scrollViewDidStopScrollCallback = ^(NSIndexPath * _Nonnull indexPath) {
             @strongify(self)
             [self playTheVideoAtIndexPath:indexPath scrollToTop:NO];
         };

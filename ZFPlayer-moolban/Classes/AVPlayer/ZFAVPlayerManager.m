@@ -25,8 +25,8 @@
 #import "ZFAVPlayerManager.h"
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
-#if __has_include(<ZFPlayer/ZFPlayer.h>)
-#import <ZFPlayer/ZFPlayer.h>
+#if __has_include(<ZFPlayer-moolban/ZFPlayer.h>)
+#import <ZFPlayer-moolban/ZFPlayer.h>
 #else
 #import "ZFPlayer.h"
 #endif

@@ -1,4 +1,4 @@
-//
+
 //  ZFOrentationObserver.m
 //  ZFPlayer
 //
@@ -137,6 +137,10 @@ static UIWindow *kWindow;
         return;
     }
     
+    UIInterfaceOrientation currentOrientation = [UIApplication sharedApplication].statusBarOrientation;
+    // Determine that if the current direction is the same as the direction you want to rotate, do nothing
+    if (_currentOrientation == currentOrientation) return;
+    
     switch (_currentOrientation) {
         case UIInterfaceOrientationPortrait: {
             [self enterLandscapeFullScreen:UIInterfaceOrientationPortrait animated:YES];
@@ -156,10 +160,6 @@ static UIWindow *kWindow;
 
 - (void)enterLandscapeFullScreen:(UIInterfaceOrientation)orientation animated:(BOOL)animated {
     if (self.fullScreenMode == ZFFullScreenModeLandscape) {
-        UIInterfaceOrientation currentOrientation = [UIApplication sharedApplication].statusBarOrientation;
-        // Determine that if the current direction is the same as the direction you want to rotate, do nothing
-        if (currentOrientation == orientation) { return; }
-        
         UIView *superview = nil;
         CGRect frame;
         if (UIInterfaceOrientationIsLandscape(orientation)) {
@@ -211,6 +211,9 @@ static UIWindow *kWindow;
 
 /// Gets the rotation Angle of the transformation.
 - (CGAffineTransform)getTransformRotationAngle:(UIInterfaceOrientation)orientation {
+    if (UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation) && orientation == UIInterfaceOrientationPortrait) {
+        return CGAffineTransformIdentity;
+    }
     if (orientation == UIInterfaceOrientationPortrait) {
         return CGAffineTransformIdentity;
     } else if (orientation == UIInterfaceOrientationLandscapeLeft){

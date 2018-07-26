@@ -38,11 +38,10 @@ static NSString *kIdentifier = @"kIdentifier";
     self.view.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.tableView];
     [self requestData];
-    self.navigationItem.title = @"Light and dark to play";
     
     self.playerManager = [[ZFAVPlayerManager alloc] init];
     
-    /// player
+    /// player,tag值必须在cell里设置
     self.player = [ZFPlayerController playerWithScrollView:self.tableView playerManager:self.playerManager containerViewTag:100];
     self.player.controlView = self.controlView;
     self.player.assetURLs = self.urls;
@@ -50,7 +49,6 @@ static NSString *kIdentifier = @"kIdentifier";
     @weakify(self)
     self.player.orientationWillChange = ^(ZFPlayerController * _Nonnull player, BOOL isFullScreen) {
         @strongify(self)
-        [self.view endEditing:YES];
         [self setNeedsStatusBarAppearanceUpdate];
         self.tableView.scrollsToTop = !isFullScreen;
     };
@@ -85,7 +83,7 @@ static NSString *kIdentifier = @"kIdentifier";
         @strongify(self)
          [self playTheVideoAtIndexPath:indexPath scrollToTop:NO];
     }];
-    ZFTableViewCell *cell = [self.tableView cellForRowAtIndexPath:self.tableView.shouldPlayIndexPath];
+    ZFTableViewCell *cell = [self.tableView cellForRowAtIndexPath:self.tableView.zf_shouldPlayIndexPath];
     [cell hideMaskView];
 }
 
@@ -160,10 +158,10 @@ static NSString *kIdentifier = @"kIdentifier";
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     @weakify(self)
     [scrollView zf_filterShouldPlayCellWhileScrolling:^(NSIndexPath *indexPath) {
-        if ([indexPath compare:self.tableView.shouldPlayIndexPath] != NSOrderedSame) {
+        if ([indexPath compare:self.tableView.zf_shouldPlayIndexPath] != NSOrderedSame) {
             @strongify(self)
             /// 显示黑色蒙版
-            ZFTableViewCell *cell1 = [self.tableView cellForRowAtIndexPath:self.tableView.shouldPlayIndexPath];
+            ZFTableViewCell *cell1 = [self.tableView cellForRowAtIndexPath:self.tableView.zf_shouldPlayIndexPath];
             [cell1 showMaskView];
             /// 隐藏黑色蒙版
             ZFTableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
@@ -176,14 +174,11 @@ static NSString *kIdentifier = @"kIdentifier";
 
 /// play the video
 - (void)playTheVideoAtIndexPath:(NSIndexPath *)indexPath scrollToTop:(BOOL)scrollToTop {
-    @weakify(self)
-    [self.player playTheIndexPath:indexPath scrollToTop:scrollToTop completionHandler:^{
-        @strongify(self)
-        ZFTableViewCellLayout *layout = self.dataSource[indexPath.row];
-        [self.controlView showTitle:layout.data.title
-                     coverURLString:layout.data.thumbnail_url
-                     fullScreenMode:layout.isVerticalVideo?ZFFullScreenModePortrait:ZFFullScreenModeLandscape];
-    }];
+    ZFTableViewCellLayout *layout = self.dataSource[indexPath.row];
+    [self.controlView showTitle:layout.data.title
+                 coverURLString:layout.data.thumbnail_url
+                 fullScreenMode:layout.isVerticalVideo?ZFFullScreenModePortrait:ZFFullScreenModeLandscape];
+    [self.player playTheIndexPath:indexPath scrollToTop:scrollToTop];
 }
 
 #pragma mark - getter
@@ -210,7 +205,7 @@ static NSString *kIdentifier = @"kIdentifier";
         }
         /// 停止的时候找出最合适的播放
         @weakify(self)
-        _tableView.scrollViewDidStopScroll = ^(NSIndexPath * _Nonnull indexPath) {
+        _tableView.zf_scrollViewDidStopScrollCallback = ^(NSIndexPath * _Nonnull indexPath) {
             @strongify(self)
             [self playTheVideoAtIndexPath:indexPath scrollToTop:NO];
         };

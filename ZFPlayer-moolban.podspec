@@ -39,4 +39,19 @@ Pod::Spec.new do |s|
         avPlayer.dependency 'ZFPlayer-moolban/Core'
     end
     
+    s.subspec 'ijkplayer' do |ijkplayer|
+        ijkplayer.source_files = 'ZFPlayer-moolban/Classes/ijkplayer/*.{h,m}'
+        ijkplayer.public_header_files = 'ZFPlayer-moolban/Classes/ijkplayer/*.h'
+        ijkplayer.dependency 'ZFPlayer-moolban/Core'
+        ijkplayer.dependency 'IJKMediaFramework'
+        ijkplayer.ios.deployment_target = '8.0'
+    end
+    
+    s.subspec 'KSYMediaPlayer' do |ksyMediaPlayer|
+        ksyMediaPlayer.source_files = 'ZFPlayer-moolban/Classes/KSYMediaPlayer/*.{h,m}'
+        ksyMediaPlayer.public_header_files = 'ZFPlayer-moolban/Classes/KSYMediaPlayer/*.h'
+        ksyMediaPlayer.dependency 'KSYMediaPlayer_iOS'
+        ksyMediaPlayer.dependency 'ZFPlayer-moolban/Core'
+    end
+    
 end

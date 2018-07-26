@@ -210,6 +210,7 @@
 - (void)setCurrentPlayerManager:(id<ZFPlayerMediaPlayback>)currentPlayerManager {
     if (!currentPlayerManager) return;
     _currentPlayerManager = currentPlayerManager;
+    _currentPlayerManager.view.hidden = YES;
     self.gestureControl.disableTypes = self.disableGestureTypes;
     [self.gestureControl addGestureToView:currentPlayerManager.view];
     [self playerManagerCallbcak];
@@ -224,7 +225,6 @@
     self.currentPlayerManager.view.frame = containerView.bounds;
     self.currentPlayerManager.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.orientationObserver addDeviceOrientationObserver];
-    self.currentPlayerManager.view.hidden = YES;
 }
 
 - (void)setControlView:(UIView<ZFPlayerMediaControl> *)controlView {
@@ -262,6 +262,7 @@
     [self.notification removeNotification];
     [self.orientationObserver removeDeviceOrientationObserver];
     [self.currentPlayerManager stop];
+    
     [self.currentPlayerManager.view removeFromSuperview];
 }
 
@@ -394,7 +395,7 @@
 
 - (void)setWWANAutoPlay:(BOOL)WWANAutoPlay {
     objc_setAssociatedObject(self, @selector(isWWANAutoPlay), @(WWANAutoPlay), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    if (self.scrollView) self.scrollView.WWANAutoPlay = self.isWWANAutoPlay;
+    if (self.scrollView) self.scrollView.zf_WWANAutoPlay = self.isWWANAutoPlay;
 }
 
 - (void)setVolume:(float)volume {
@@ -460,7 +461,7 @@
     if (self.orientationObserver.fullScreenMode == ZFFullScreenModePortrait) {
         [self.orientationObserver enterPortraitFullScreen:fullScreen animated:YES];
     } else {
-        UIInterfaceOrientation orientation =  UIInterfaceOrientationUnknown;
+        UIInterfaceOrientation orientation = UIInterfaceOrientationUnknown;
         orientation = fullScreen? UIInterfaceOrientationLandscapeRight : UIInterfaceOrientationPortrait;
         [self.orientationObserver enterLandscapeFullScreen:orientation animated:animated];
     }
@@ -663,7 +664,7 @@
 - (void)addPlayerViewToCell {
     self.isSmallFloatViewShow = NO;
     self.smallFloatView.hidden = YES;
-    UIView *cell = [self.scrollView zf_getCellForIndexPath:self.scrollView.playingIndexPath];
+    UIView *cell = [self.scrollView zf_getCellForIndexPath:self.playingIndexPath];
     self.containerView = [cell viewWithTag:self.containerViewTag];
     [self.containerView addSubview:self.currentPlayerManager.view];
     self.currentPlayerManager.view.frame = self.containerView.bounds;
@@ -677,6 +678,7 @@
     self.smallFloatView.hidden = NO;
     [self.smallFloatView addSubview:self.currentPlayerManager.view];
     self.currentPlayerManager.view.frame = self.smallFloatView.bounds;
+    self.currentPlayerManager.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.orientationObserver cellSmallModelRotateView:self.currentPlayerManager.view containerView:self.smallFloatView];
 }
 
@@ -684,10 +686,10 @@
 
 - (void)setScrollView:(UIScrollView *)scrollView {
     objc_setAssociatedObject(self, @selector(scrollView), scrollView, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    self.scrollView.WWANAutoPlay = self.isWWANAutoPlay;
+    self.scrollView.zf_WWANAutoPlay = self.isWWANAutoPlay;
     @weakify(self)
-    scrollView.enableScrollHook = YES;
-    scrollView.playerDidAppearInScrollView = ^(NSIndexPath * _Nonnull indexPath) {
+    scrollView.zf_enableScrollHook = YES;
+    scrollView.zf_playerDidAppearInScrollView = ^(NSIndexPath * _Nonnull indexPath) {
         @strongify(self)
         if (self.isFullScreen) return;
         if ([self.controlView respondsToSelector:@selector(playerDidAppearInScrollView:)]) {
@@ -698,7 +700,7 @@
         }
     };
     
-    scrollView.playerWillDisappearInScrollView = ^(NSIndexPath * _Nonnull indexPath) {
+    scrollView.zf_playerWillDisappearInScrollView = ^(NSIndexPath * _Nonnull indexPath) {
         @strongify(self)
         if (self.isFullScreen) return;
         if ([self.controlView respondsToSelector:@selector(playerWillDisappearInScrollView:)]) {
@@ -706,7 +708,7 @@
         }
     };
     
-    scrollView.playerDisappearHalfInScrollView = ^(NSIndexPath * _Nonnull indexPath) {
+    scrollView.zf_playerDisappearHalfInScrollView = ^(NSIndexPath * _Nonnull indexPath) {
         @strongify(self)
         if (self.isFullScreen) return;
         if ([self.controlView respondsToSelector:@selector(playerDisappearHalfInScrollView:)]) {
@@ -717,7 +719,7 @@
         }
     };
     
-    scrollView.playerDidDisappearInScrollView = ^(NSIndexPath * _Nonnull indexPath) {
+    scrollView.zf_playerDidDisappearInScrollView = ^(NSIndexPath * _Nonnull indexPath) {
         @strongify(self)
         if (self.isFullScreen) return;
         if ([self.controlView respondsToSelector:@selector(playerDidDisappearInScrollView:)]) {
@@ -732,13 +734,13 @@
 }
 
 - (void)setStopWhileNotVisible:(BOOL)stopWhileNotVisible {
-    self.scrollView.stopWhileNotVisible = stopWhileNotVisible;
+    self.scrollView.zf_stopWhileNotVisible = stopWhileNotVisible;
     objc_setAssociatedObject(self, @selector(stopWhileNotVisible), @(stopWhileNotVisible), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (void)setContainerViewTag:(NSInteger)containerViewTag {
     objc_setAssociatedObject(self, @selector(containerViewTag), @(containerViewTag), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    self.scrollView.containerViewTag = containerViewTag;
+    self.scrollView.zf_containerViewTag = containerViewTag;
 }
 
 - (void)setPlayingIndexPath:(NSIndexPath *)playingIndexPath {
@@ -749,12 +751,12 @@
         self.containerView = [cell viewWithTag:self.containerViewTag];
         [self.orientationObserver cellModelRotateView:self.currentPlayerManager.view rotateViewAtCell:cell playerViewTag:self.containerViewTag];
         [self.orientationObserver addDeviceOrientationObserver];
-        self.scrollView.playingIndexPath = playingIndexPath;
+        self.scrollView.zf_playingIndexPath = playingIndexPath;
     }
 }
 
 - (void)setShouldAutoPlay:(BOOL)shouldAutoPlay {
-    self.scrollView.shouldAutoPlay = shouldAutoPlay;
+    self.scrollView.zf_shouldAutoPlay = shouldAutoPlay;
 }
 
 - (void)setSectionAssetURLs:(NSArray<NSArray<NSURL *> *> * _Nullable)sectionAssetURLs {
@@ -811,7 +813,7 @@
 }
 
 - (BOOL)shouldAutoPlay {
-    return self.scrollView.shouldAutoPlay;
+    return self.scrollView.zf_shouldAutoPlay;
 }
 
 - (void)playTheIndexPath:(NSIndexPath *)indexPath scrollToTop:(BOOL)scrollToTop completionHandler:(void (^ _Nullable)(void))completionHandler {
@@ -829,7 +831,7 @@
             if (completionHandler) completionHandler();
             self.playingIndexPath = indexPath;
             self.assetURL = assetURL;
-            [self.scrollView zf_scrollViewStopScroll];
+            [self.scrollView zf_scrollViewDidStopScroll];
         }];
     } else {
         if (completionHandler) completionHandler();
@@ -862,10 +864,10 @@
 }
 
 - (void)stopCurrentPlayingCell {
-    if (self.scrollView.playingIndexPath) {
+    if (self.scrollView.zf_playingIndexPath) {
         [self stop];
         self.isSmallFloatViewShow = NO;
-        self.scrollView.playingIndexPath = nil;
+        self.scrollView.zf_playingIndexPath = nil;
         if (self.smallFloatView) self.smallFloatView.hidden = YES;
     }
 }
