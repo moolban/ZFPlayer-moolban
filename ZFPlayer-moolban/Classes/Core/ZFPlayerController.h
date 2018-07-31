@@ -61,6 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithPlayerManager:(id<ZFPlayerMediaPlayback>)playerManager containerView:(UIView *)containerView;
 
++ (instancetype)playerWithScrollView:(UIScrollView *)scrollView playerManager:(id<ZFPlayerMediaPlayback>)playerManager containerViewTag:(NSInteger)containerViewTag containerViewClass:(NSString *)containerViewClass;
 /*!
  @method            playerWithScrollView:playerManager:
  @abstract          Create an ZFPlayerController that plays a single audiovisual item. Use in `tableView` or `collectionView`.
@@ -80,6 +81,8 @@ NS_ASSUME_NONNULL_BEGIN
  @result            An instance of ZFPlayerController.
  */
 - (instancetype)initWithScrollView:(UIScrollView *)scrollView playerManager:(id<ZFPlayerMediaPlayback>)playerManager containerViewTag:(NSInteger)containerViewTag;
+
+- (instancetype)initWithScrollView:(UIScrollView *)scrollView playerManager:(id<ZFPlayerMediaPlayback>)playerManager containerViewTag:(NSInteger)containerViewTag containerViewClass:(NSString *)containerViewClass;
 
 @end
 
@@ -273,6 +276,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// The view tag that the player display in scrollView.
 @property (nonatomic, readonly) NSInteger containerViewTag;
+@property (nonatomic, readonly) NSString *containerViewClass;
 
 /// The current playing cell stop playing when the cell has out off the screen，defalut is YES.
 @property (nonatomic) BOOL stopWhileNotVisible;

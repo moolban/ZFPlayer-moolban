@@ -44,9 +44,15 @@ static NSString *kDouYinIdentifier = @"douYinIdentifier";
     
     /// player,tag值必须在cell里设置
     self.player = [ZFPlayerController playerWithScrollView:self.tableView playerManager:playerManager containerViewTag:100];
+    [self.controlView.portraitControlView hideControlView];
+    [self.controlView.landScapeControlView hideControlView];
+    [self.controlView setPlaceholderImage:[UIImage imageNamed:@"sketchVedioBack180724"]];
     self.player.controlView = self.controlView;
+    
     /// 0.8是消失80%时候
     self.player.playerDisapperaPercent = 0.8;
+    self.player.allowOrentitaionRotation = NO;
+    [self.player setDisableGestureTypes:ZFPlayerDisableGestureTypesAll];
     
     @weakify(self)
     self.player.playerDidToEnd = ^(id  _Nonnull asset) {

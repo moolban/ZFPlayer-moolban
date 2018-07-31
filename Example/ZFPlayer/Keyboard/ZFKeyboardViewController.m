@@ -15,10 +15,12 @@
 //#import <ZFPlayer-moolban/ZFIJKPlayerManager.h>
 #import <ZFPlayer-moolban/UIView+ZFFrame.h>
 
+#import "ViewVideoPlayerControler.h"
+
 @interface ZFKeyboardViewController ()
 @property (nonatomic, strong) ZFPlayerController *player;
 @property (nonatomic, strong) UIView *containerView;
-@property (nonatomic, strong) ZFPlayerControlView *controlView;
+@property (nonatomic, strong) ViewVideoPlayerControler *controlView;
 @property (nonatomic, strong) UITextField *textField;
 @property (nonatomic, strong) UIButton *playBtn;
 
@@ -41,6 +43,8 @@
     self.player = [[ZFPlayerController alloc] initWithPlayerManager:playerManager containerView:self.containerView];
 
     self.player.controlView = self.controlView;
+    
+    self.player.disableGestureTypes = ZFPlayerDisableGestureTypesAll;
     @weakify(self)
     self.player.orientationWillChange = ^(ZFPlayerController * _Nonnull player, BOOL isFullScreen) {
         @strongify(self)
@@ -107,9 +111,9 @@
     return UIInterfaceOrientationMaskPortrait;
 }
 
-- (ZFPlayerControlView *)controlView {
+- (ViewVideoPlayerControler *)controlView {
     if (!_controlView) {
-        _controlView = [ZFPlayerControlView new];
+        _controlView = [ViewVideoPlayerControler new];
     }
     return _controlView;
 }

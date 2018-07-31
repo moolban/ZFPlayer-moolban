@@ -37,8 +37,6 @@ static NSString * const reuseIdentifier = @"collectionViewCell";
     
     /// playerManager
     ZFAVPlayerManager *playerManager = [[ZFAVPlayerManager alloc] init];
-//    KSMediaPlayerManager *playerManager = [[KSMediaPlayerManager alloc] init];
-//    ZFIJKPlayerManager *playerManager = [[ZFIJKPlayerManager alloc] init];
     
     /// player的tag值必须在cell里设置
     self.player = [ZFPlayerController playerWithScrollView:self.collectionView playerManager:playerManager containerViewTag:100];

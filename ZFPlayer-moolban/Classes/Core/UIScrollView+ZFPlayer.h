@@ -56,6 +56,7 @@ typedef NS_ENUM(NSUInteger, ZFPlayerScrollDerection) {
 
 /// The view tag that the player display in scrollView.
 @property (nonatomic) NSInteger zf_containerViewTag;
+@property (nonatomic, retain) NSString *zf_containerViewClass;
 
 /// The scroll derection of scrollView.
 @property (nonatomic) ZFPlayerScrollDerection zf_scrollDerection;

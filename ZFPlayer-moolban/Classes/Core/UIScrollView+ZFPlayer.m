@@ -185,6 +185,30 @@ UIKIT_STATIC_INLINE void Hook_Method(Class originalClass, SEL originalSel, Class
     self.zf_lastOffsetY = self.contentOffset.y;
 }
 
+- (UIView *)getPlayerView:(UIView *)cell{
+    if (cell == nil) {
+        return nil;
+    }
+    UIView *playerView = nil;
+    if (self.zf_containerViewClass != nil && [self.zf_containerViewClass length] > 0) {
+        UIView *cellContents = [cell viewWithTag:self.zf_containerViewTag];
+        for (UIView *subView in [cellContents subviews]) {
+            if ([[[subView class] description] isEqualToString:self.zf_containerViewClass]) {
+                playerView = [cell viewWithTag:self.zf_containerViewTag];
+                break;
+            }
+        }
+        
+        if (playerView == nil) {
+            playerView = [cell viewWithTag:self.zf_containerViewTag];
+        }
+    }else{
+        playerView = [cell viewWithTag:self.zf_containerViewTag];
+    }
+    
+    return playerView;
+}
+
 - (void)scrollViewScrolling {
     if (!self.zf_enableScrollHook) return;
     
@@ -201,7 +225,8 @@ UIKIT_STATIC_INLINE void Hook_Method(Class originalClass, SEL originalSel, Class
         if (self.zf_playerDidDisappearInScrollView) self.zf_playerDidDisappearInScrollView(self.zf_playingIndexPath);
         return;
     }
-    UIView *playerView = [cell viewWithTag:self.zf_containerViewTag];
+    UIView *playerView = [self getPlayerView:cell];
+    
     CGRect rect1 = [playerView convertRect:playerView.frame toView:self];
     CGRect rect = [self convertRect:rect1 toView:self.superview];
     /// playerView top to scrollView top space.
@@ -291,7 +316,7 @@ UIKIT_STATIC_INLINE void Hook_Method(Class originalClass, SEL originalSel, Class
         indexPath = tableView.indexPathsForVisibleRows.firstObject;
         if (self.contentOffset.y <= 0 && (!self.zf_playingIndexPath || [indexPath compare:self.zf_playingIndexPath] == NSOrderedSame)) {
             UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-            UIView *playerView = [cell viewWithTag:self.zf_containerViewTag];
+            UIView *playerView = [self getPlayerView:cell];
             if (playerView) {
                 if (handler) handler(indexPath);
                 self.zf_shouldPlayIndexPath = indexPath;
@@ -303,7 +328,7 @@ UIKIT_STATIC_INLINE void Hook_Method(Class originalClass, SEL originalSel, Class
         indexPath = tableView.indexPathsForVisibleRows.lastObject;
         if (self.contentOffset.y + self.frame.size.height >= self.contentSize.height && (!self.zf_playingIndexPath || [indexPath compare:self.zf_playingIndexPath] == NSOrderedSame)) {
             UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-            UIView *playerView = [cell viewWithTag:self.zf_containerViewTag];
+            UIView *playerView = [self getPlayerView:cell];
             if (playerView) {
                 if (handler) handler(indexPath);
                 self.zf_shouldPlayIndexPath = indexPath;
@@ -327,7 +352,7 @@ UIKIT_STATIC_INLINE void Hook_Method(Class originalClass, SEL originalSel, Class
         indexPath = sortedIndexPaths.firstObject;
         if (self.contentOffset.y <= 0 && (!self.zf_playingIndexPath || [indexPath compare:self.zf_playingIndexPath] == NSOrderedSame)) {
             UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:indexPath];
-            UIView *playerView = [cell viewWithTag:self.zf_containerViewTag];
+            UIView *playerView = [self getPlayerView:cell];
             if (playerView) {
                 if (handler) handler(indexPath);
                 self.zf_shouldPlayIndexPath = indexPath;
@@ -339,7 +364,7 @@ UIKIT_STATIC_INLINE void Hook_Method(Class originalClass, SEL originalSel, Class
         indexPath = collectionView.indexPathsForVisibleItems.lastObject;
         if (self.contentOffset.y + self.frame.size.height >= self.contentSize.height && (!self.zf_playingIndexPath || [indexPath compare:self.zf_playingIndexPath] == NSOrderedSame)) {
             UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:indexPath];
-            UIView *playerView = [cell viewWithTag:self.zf_containerViewTag];
+            UIView *playerView = [self getPlayerView:cell];
             if (playerView) {
                 if (handler) handler(indexPath);
                 self.zf_shouldPlayIndexPath = indexPath;
@@ -363,7 +388,7 @@ UIKIT_STATIC_INLINE void Hook_Method(Class originalClass, SEL originalSel, Class
     @weakify(self)
     [cellsArray enumerateObjectsUsingBlock:^(UIView *cell, NSUInteger idx, BOOL * _Nonnull stop) {
         @strongify(self)
-        UIView *playerView = [cell viewWithTag:self.zf_containerViewTag];
+        UIView *playerView = [self getPlayerView:cell];
         if (!playerView) return;
         CGRect rect1 = [playerView convertRect:playerView.frame toView:self];
         CGRect rect = [self convertRect:rect1 toView:self.superview];
@@ -468,6 +493,10 @@ UIKIT_STATIC_INLINE void Hook_Method(Class originalClass, SEL originalSel, Class
     return [objc_getAssociatedObject(self, _cmd) integerValue];
 }
 
+- (NSString *)zf_containerViewClass{
+    return objc_getAssociatedObject(self, _cmd);
+}
+
 - (ZFPlayerScrollDerection)zf_scrollDerection {
     return [objc_getAssociatedObject(self, _cmd) integerValue];
 }
@@ -514,6 +543,10 @@ UIKIT_STATIC_INLINE void Hook_Method(Class originalClass, SEL originalSel, Class
     if (self.zf_shouldPlayIndexPathCallback) self.zf_shouldPlayIndexPathCallback(zf_shouldPlayIndexPath);
     objc_setAssociatedObject(self, @selector(zf_shouldPlayIndexPath), zf_shouldPlayIndexPath, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     self.shouldPlayIndexPath = zf_shouldPlayIndexPath;
+}
+
+- (void)setZf_containerViewClass:(NSString *)zf_containerViewClass {
+    objc_setAssociatedObject(self, @selector(zf_containerViewClass), zf_containerViewClass, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (void)setZf_containerViewTag:(NSInteger)zf_containerViewTag {

@@ -39,6 +39,7 @@
 @property (nonatomic, weak) UIScrollView *scrollView;
 @property (nonatomic, strong) UISlider *volumeViewSlider;
 @property (nonatomic, assign) NSInteger containerViewTag;
+@property (nonatomic, strong) NSString *containerViewClass;
 
 @end
 
@@ -71,7 +72,7 @@
         }
     }
     // Apps using this category don't mute when the phone's mute button is turned on, but play sound when the phone is silent
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
     [[AVAudioSession sharedInstance] setActive:YES error:nil];
 }
 
@@ -81,6 +82,11 @@
 
 + (instancetype)playerWithPlayerManager:(id<ZFPlayerMediaPlayback>)playerManager containerView:(nonnull UIView *)containerView {
     ZFPlayerController *player = [[self alloc] initWithPlayerManager:playerManager containerView:containerView];
+    return player;
+}
+
++ (instancetype)playerWithScrollView:(UIScrollView *)scrollView playerManager:(id<ZFPlayerMediaPlayback>)playerManager containerViewTag:(NSInteger)containerViewTag containerViewClass:(NSString *)containerViewClass {
+    ZFPlayerController *player = [[self alloc] initWithScrollView:scrollView playerManager:playerManager containerViewTag:containerViewTag containerViewClass:containerViewClass];
     return player;
 }
 
@@ -101,6 +107,15 @@
     player.scrollView = scrollView;
     player.currentPlayerManager = playerManager;
     player.containerViewTag = containerViewTag;
+    return player;
+}
+
+- (instancetype)initWithScrollView:(UIScrollView *)scrollView playerManager:(id<ZFPlayerMediaPlayback>)playerManager containerViewTag:(NSInteger)containerViewTag containerViewClass:(NSString *)containerViewClass{
+    ZFPlayerController *player = [self init];
+    player.scrollView = scrollView;
+    player.currentPlayerManager = playerManager;
+    player.containerViewTag = containerViewTag;
+    player.containerViewClass = containerViewClass;
     return player;
 }
 
@@ -765,7 +780,21 @@
     self.isSmallFloatViewShow = NO;
     self.smallFloatView.hidden = YES;
     UIView *cell = [self.scrollView zf_getCellForIndexPath:self.playingIndexPath];
-    self.containerView = [cell viewWithTag:self.containerViewTag];
+    if (self.containerViewClass != nil && [self.containerViewClass length] > 0) {
+        UIView *cellContents = [cell viewWithTag:self.containerViewTag];
+        for (UIView *subView in [cellContents subviews]) {
+            if ([[[subView class] description] isEqualToString:self.containerViewClass]) {
+                self.containerView = [cell viewWithTag:self.containerViewTag];
+                break;
+            }
+        }
+        
+        if (self.containerView == nil) {
+            self.containerView = [cell viewWithTag:self.containerViewTag];
+        }
+    }else{
+        self.containerView = [cell viewWithTag:self.containerViewTag];
+    }
     [self.containerView addSubview:self.currentPlayerManager.view];
     self.currentPlayerManager.view.frame = self.containerView.bounds;
     self.currentPlayerManager.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -860,6 +889,11 @@
     objc_setAssociatedObject(self, @selector(stopWhileNotVisible), @(stopWhileNotVisible), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
+- (void)setContainerViewClass:(NSString * _Nonnull)containerViewClass {
+    objc_setAssociatedObject(self, @selector(containerViewClass), containerViewClass, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    self.scrollView.zf_containerViewClass = containerViewClass;
+}
+
 - (void)setContainerViewTag:(NSInteger)containerViewTag {
     objc_setAssociatedObject(self, @selector(containerViewTag), @(containerViewTag), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     self.scrollView.zf_containerViewTag = containerViewTag;
@@ -870,7 +904,21 @@
     if (playingIndexPath) {
         [self stopCurrentPlayingCell];
         UIView *cell = [self.scrollView zf_getCellForIndexPath:playingIndexPath];
-        self.containerView = [cell viewWithTag:self.containerViewTag];
+        if (self.containerViewClass != nil && [self.containerViewClass length] > 0) {
+            UIView *cellContents = [cell viewWithTag:self.containerViewTag];
+            for (UIView *subView in [cellContents subviews]) {
+                if ([[[subView class] description] isEqualToString:self.containerViewClass]) {
+                    self.containerView = [cell viewWithTag:self.containerViewTag];
+                    break;
+                }
+            }
+            
+            if (self.containerView == nil) {
+                self.containerView = [cell viewWithTag:self.containerViewTag];
+            }
+        }else{
+            self.containerView = [cell viewWithTag:self.containerViewTag];
+        }
         [self.orientationObserver cellModelRotateView:self.currentPlayerManager.view rotateViewAtCell:cell playerViewTag:self.containerViewTag];
         [self addDeviceOrientationObserver];
         self.scrollView.zf_playingIndexPath = playingIndexPath;
@@ -949,6 +997,10 @@
 
 - (NSInteger)containerViewTag {
     return [objc_getAssociatedObject(self, _cmd) integerValue];
+}
+
+- (NSString *)containerViewClass {
+    return objc_getAssociatedObject(self, _cmd);
 }
 
 - (ZFFloatView *)smallFloatView {

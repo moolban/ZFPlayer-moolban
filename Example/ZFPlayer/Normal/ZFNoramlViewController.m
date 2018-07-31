@@ -16,12 +16,14 @@
 
 #import "ZFSmallPlayViewController.h"
 
-static NSString *kVideoCover = @"https://upload-images.jianshu.io/upload_images/635942-14593722fe3f0695.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240";
+#import "ViewVideoPlayerControler.h"
+
+static NSString *kVideoCover = nil;
 
 @interface ZFNoramlViewController ()
 @property (nonatomic, strong) ZFPlayerController *player;
 @property (nonatomic, strong) UIView *containerView;
-@property (nonatomic, strong) ZFPlayerControlView *controlView;
+@property (nonatomic, strong) ViewVideoPlayerControler *controlView;
 @property (nonatomic, strong) UIButton *playBtn;
 @property (nonatomic, strong) UIButton *changeBtn;
 @property (nonatomic, strong) UIButton *nextBtn;
@@ -43,6 +45,7 @@ static NSString *kVideoCover = @"https://upload-images.jianshu.io/upload_images/
     [self.view addSubview:self.nextBtn];
 
     ZFAVPlayerManager *playerManager = [[ZFAVPlayerManager alloc] init];
+    [playerManager setScalingMode:ZFPlayerScalingModeAspectFill];
 //    KSMediaPlayerManager *playerManager = [[KSMediaPlayerManager alloc] init];
 //    ZFIJKPlayerManager *playerManager = [[ZFIJKPlayerManager alloc] init];
     /// 播放器相关
@@ -97,7 +100,7 @@ static NSString *kVideoCover = @"https://upload-images.jianshu.io/upload_images/
     CGFloat x = 0;
     CGFloat y = CGRectGetMaxY(self.navigationController.navigationBar.frame);
     CGFloat w = CGRectGetWidth(self.view.frame);
-    CGFloat h = w*9/16;
+    CGFloat h = w*1/1;
     self.containerView.frame = CGRectMake(x, y, w, h);
     
     w = 44;
@@ -176,9 +179,9 @@ static NSString *kVideoCover = @"https://upload-images.jianshu.io/upload_images/
     self.player.currentPlayerManager.muted = !self.player.currentPlayerManager.muted;
 }
 
-- (ZFPlayerControlView *)controlView {
+- (ViewVideoPlayerControler *)controlView {
     if (!_controlView) {
-        _controlView = [ZFPlayerControlView new];
+        _controlView = [[ViewVideoPlayerControler alloc] init];
     }
     return _controlView;
 }
