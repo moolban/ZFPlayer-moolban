@@ -23,7 +23,11 @@
 // THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
+#if __has_include(<ZFPlayer-moolban/ZFPlayer.h>)
 #import <ZFPlayer-moolban/ZFPlayerMediaPlayback.h>
+#else
+#import "ZFPlayerMediaPlayback.h"
+#endif
 
 @interface ZFAVPlayerManager : NSObject <ZFPlayerMediaPlayback>
 
