@@ -23,7 +23,7 @@
 // THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
-#if __has_include(<ZFPlayer-moolban/ZFPlayer.h>)
+#if __has_include(<ZFPlayer-moolban/ZFPlayerMediaPlayback.h>)
 #import <ZFPlayer-moolban/ZFPlayerMediaPlayback.h>
 #else
 #import "ZFPlayerMediaPlayback.h"

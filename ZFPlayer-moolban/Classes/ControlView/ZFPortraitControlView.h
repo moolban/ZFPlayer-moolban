@@ -23,7 +23,7 @@
 // THE SOFTWARE.
 
 #import <UIKit/UIKit.h>
-#if __has_include(<ZFPlayer-moolban/ZFPlayer.h>)
+#if __has_include(<ZFPlayer-moolban/ZFPlayerController.h>)
 #import <ZFPlayer-moolban/ZFPlayerController.h>
 #else
 #import "ZFPlayerController.h"
