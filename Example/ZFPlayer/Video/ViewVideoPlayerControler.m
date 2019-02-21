@@ -102,21 +102,58 @@ static const CGFloat ZFPlayerControlViewAutoFadeOutTimeInterval = 0.25f;
 }
 
 - (void)initNib{
-    UIView *view = [[[NSBundle bundleForClass:[self class]] loadNibNamed:NSStringFromClass([self class]) owner:self options:nil] objectAtIndex:0];
+    view = [[[NSBundle bundleForClass:[self class]] loadNibNamed:NSStringFromClass([self class]) owner:self options:nil] objectAtIndex:0];
     [view setFrame:self.bounds];
-    [view setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
+    [self setConstraint:view];
     [self addSubview:view];
 }
 
-- (void)initData{
+- (void)setConstraint:(UIView *)view {
+    view.translatesAutoresizingMaskIntoConstraints = NO;
+    NSLayoutConstraint *viewWidth =  [NSLayoutConstraint constraintWithItem:view
+                                                                  attribute:NSLayoutAttributeWidth
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self
+                                                                  attribute:NSLayoutAttributeWidth
+                                                                 multiplier:1
+                                                                   constant:0];
     
+    
+    NSLayoutConstraint *viewHeight =  [NSLayoutConstraint constraintWithItem:view
+                                                                   attribute:NSLayoutAttributeHeight
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self
+                                                                   attribute:NSLayoutAttributeHeight
+                                                                  multiplier:1
+                                                                    constant:0];
+    
+    NSLayoutConstraint *centerX = [NSLayoutConstraint constraintWithItem:view
+                                                               attribute:NSLayoutAttributeCenterX
+                                                               relatedBy:NSLayoutRelationEqual
+                                                                  toItem:self
+                                                               attribute:NSLayoutAttributeCenterX
+                                                              multiplier:1
+                                                                constant:0];
+    
+    NSLayoutConstraint *centerY = [NSLayoutConstraint constraintWithItem:view
+                                                               attribute:NSLayoutAttributeCenterY
+                                                               relatedBy:NSLayoutRelationEqual
+                                                                  toItem:self
+                                                               attribute:NSLayoutAttributeCenterY
+                                                              multiplier:1
+                                                                constant:0];
+    
+    [self addConstraints:[NSArray arrayWithObjects:viewWidth,viewHeight,centerX,centerY,nil]];
+}
+
+- (void)initData{
+    _showBtnMsg = YES;
 }
 
 - (void)setup{
     [self initNib];
     [self initUI];
     [self setEvent];
-    
     [self resetControlView];
 }
 
@@ -135,7 +172,7 @@ static const CGFloat ZFPlayerControlViewAutoFadeOutTimeInterval = 0.25f;
     [_slider setMaximumTrackTintColor:[UIColor colorWithRed:0.5 green:0.5 blue:0.5 alpha:0.8]];
     [_slider setBufferTrackTintColor:[UIColor colorWithRed:1 green:1 blue:1 alpha:0.5]];
     [_slider setMinimumTrackTintColor:[UIColor whiteColor]];
-    [_slider setThumbImage:ZFPlayer_Image(@"ZFPlayer_slider") forState:UIControlStateNormal];
+    [_slider setThumbImage:[UIImage imageNamed:@"ZFPlayer_slider"] forState:UIControlStateNormal];
     [_slider setSliderHeight:2];
     
     [self addAllSubViews];
@@ -146,6 +183,9 @@ static const CGFloat ZFPlayerControlViewAutoFadeOutTimeInterval = 0.25f;
     
     [_backBtn addTarget:self action:@selector(backBtnClickAction:) forControlEvents:UIControlEventTouchUpInside];
     [_playOrPauseBtn addTarget:self action:@selector(playPauseButtonClickAction:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [_centerPlayOrPauseBtn addTarget:self action:@selector(playPauseButtonClickAction:) forControlEvents:UIControlEventTouchUpInside];
+    
     [_soundBtn addTarget:self action:@selector(soundButtonClickAction:) forControlEvents:UIControlEventTouchUpInside];
     [_fullScreenBtn addTarget:self action:@selector(fullScreenButtonClickAction:) forControlEvents:UIControlEventTouchUpInside];
 }
@@ -153,16 +193,11 @@ static const CGFloat ZFPlayerControlViewAutoFadeOutTimeInterval = 0.25f;
 
 - (void)layoutSubviews {
     [super layoutSubviews];
+    
     CGFloat min_x = 0;
     CGFloat min_y = 0;
     CGFloat min_w = 0;
     CGFloat min_h = 0;
-    
-    min_w = 80;
-    min_h = 80;
-    self.activity.frame = CGRectMake(min_x, min_y, min_w, min_h);
-    self.activity.centerX = self.centerX;
-    self.activity.centerY = self.centerY + 10;
     
     min_x = 0;
     min_y = 0;
@@ -170,25 +205,48 @@ static const CGFloat ZFPlayerControlViewAutoFadeOutTimeInterval = 0.25f;
     min_h = 40;
     self.volumeBrightnessView.frame = CGRectMake(min_x, min_y, min_w, min_h);
     self.volumeBrightnessView.center = self.center;
- 
+    
     if (!self.isShow) {
-        self.bottomToolView.y = self.height;
+        [_consBottmoToolB setConstant:-_bottomToolView.frame.size.height];
         self.playOrPauseBtn.alpha = 0;
+        self.backBtn.alpha = 0;
     } else {
-        self.bottomToolView.y = self.height - self.bottomToolView.height;
+        [_consBottmoToolB setConstant:0];
+        //        self.bottomToolView.y = self.height - self.bottomToolView.height;
         self.playOrPauseBtn.alpha = 1;
+        self.backBtn.alpha = 1;
     }
 }
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil];
     [self cancelAutoFadeOutControlView];
+    
+    [_ivPlay release];
+    [_activity release];
+    [_vFail release];
+    [_failBtn release];
+    [_coverImageView release];
+    [_volumeBrightnessView release];
+    
+    [_portraitControlView release];
+    [_backBtn release];
+    [_bottomToolView release];
+    [_playOrPauseBtn release];
+    [_currentTimeLabel release];
+    [_slider release];
+    [_totalTimeLabel release];
+    [_soundBtn release];
+    [_fullScreenBtn release];
+    
+    [_btnMsg release];
+    [_consBottmoToolB release];
+    [_centerPlayOrPauseBtn release];
+    [super dealloc];
 }
 
 /// 添加所有子控件
 - (void)addAllSubViews {
-    [self addSubview:self.activity];
-    
     [self addSubview:self.volumeBrightnessView];
 }
 
@@ -214,13 +272,13 @@ static const CGFloat ZFPlayerControlViewAutoFadeOutTimeInterval = 0.25f;
 /// 隐藏控制层
 - (void)hideControlViewWithAnimated:(BOOL)animated {
     [UIView animateWithDuration:animated?ZFPlayerControlViewAutoFadeOutTimeInterval:0 animations:^{
-//        if (self.player.isFullScreen) {
-//
-//        } else
+        //        if (self.player.isFullScreen) {
+        //
+        //        } else
         {
-            [self->_soundBtn setSelected:self.player.currentPlayerManager.isMuted];
-            [self->_fullScreenBtn setSelected:self.player.isFullScreen];
-            [self->_backBtn setHidden:!self->_fullScreenBtn.isSelected];
+            [_soundBtn setSelected:self.player.currentPlayerManager.isMuted];
+            [_fullScreenBtn setSelected:self.player.isFullScreen];
+            [_backBtn setHidden:!_fullScreenBtn.isSelected];
             
             if (!self.player.isSmallFloatViewShow) {
                 [self hideControlView];
@@ -235,13 +293,13 @@ static const CGFloat ZFPlayerControlViewAutoFadeOutTimeInterval = 0.25f;
 /// 显示控制层
 - (void)showControlViewWithAnimated:(BOOL)animated  {
     [UIView animateWithDuration:animated?ZFPlayerControlViewAutoFadeOutTimeInterval:0 animations:^{
-//        if (self.player.isFullScreen) {
-//
-//        } else
+        //        if (self.player.isFullScreen) {
+        //
+        //        } else
         {
-            [self->_soundBtn setSelected:self.player.currentPlayerManager.isMuted];
-            [self->_fullScreenBtn setSelected:self.player.isFullScreen];
-            [self->_backBtn setHidden:!self->_fullScreenBtn.isSelected];
+            [_soundBtn setSelected:self.player.currentPlayerManager.isMuted];
+            [_fullScreenBtn setSelected:self.player.isFullScreen];
+            [_backBtn setHidden:!_fullScreenBtn.isSelected];
             
             if (!self.player.isSmallFloatViewShow) {
                 [self showControlView];
@@ -267,15 +325,20 @@ static const CGFloat ZFPlayerControlViewAutoFadeOutTimeInterval = 0.25f;
 /// 重置控制层
 - (void)resetControlView {
     self.bottomToolView.alpha        = 1;
+    self.backBtn.alpha               = 1;
     self.slider.value                = 0;
     self.slider.bufferValue          = 0;
     self.currentTimeLabel.text       = @"00:00";
     self.totalTimeLabel.text         = @"00:00";
     self.backgroundColor             = [UIColor clearColor];
     self.playOrPauseBtn.selected     = YES;
-    self.backBtn.alpha               = 1;
+    self.centerPlayOrPauseBtn.selected = YES;
+    //    self.backBtn.alpha               = 1;
     
     [_ivPlay setHidden:self.playOrPauseBtn.isSelected];
+    if (_showBtnMsg) {
+        [_btnMsg setHidden:!self.playOrPauseBtn.isSelected];
+    }
     
     [_soundBtn setSelected:self.player.currentPlayerManager.isMuted];
     [_fullScreenBtn setSelected:self.player.isFullScreen];
@@ -295,6 +358,7 @@ static const CGFloat ZFPlayerControlViewAutoFadeOutTimeInterval = 0.25f;
     [self resetControlView];
     [self layoutIfNeeded];
     [self setNeedsDisplay];
+//    [_coverImageView setImageURLString:coverUrl idx:1 def:@"" aDelegate:nil];
     [self showTitle:title fullScreenMode:fullScreenMode];
 }
 
@@ -412,9 +476,23 @@ static const CGFloat ZFPlayerControlViewAutoFadeOutTimeInterval = 0.25f;
 /// 加载状态改变
 - (void)videoPlayer:(ZFPlayerController *)videoPlayer loadStateChanged:(ZFPlayerLoadState)state {
     if (state == ZFPlayerLoadStatePrepare) {
+        [self.coverImageView setAlpha:1.0];
         self.coverImageView.hidden = NO;
     } else if (state == ZFPlayerLoadStatePlaythroughOK) {
-        self.coverImageView.hidden = YES;
+        //        self.coverImageView.hidden = YES;
+        [self.coverImageView setAlpha:1.0];
+        
+        [UIView animateWithDuration:0.5
+                              delay:0.0
+                            options: UIViewAnimationOptionCurveEaseOut
+                         animations:^(void) {
+                             [self.coverImageView setAlpha:0.0];
+                         }
+                         completion:^(BOOL finished) {
+                             if (finished) {
+                                 self.coverImageView.hidden = YES;
+                             }
+                         }];
     }
     if (state == ZFPlayerLoadStateStalled || state == ZFPlayerLoadStatePrepare) {
         [self.activity startAnimating];
@@ -465,6 +543,22 @@ static const CGFloat ZFPlayerControlViewAutoFadeOutTimeInterval = 0.25f;
 
 /// 视频view已经旋转
 - (void)videoPlayer:(ZFPlayerController *)videoPlayer orientationDidChanged:(ZFOrientationObserver *)observer {
+    //    CGFloat fullW = self.bounds.size.width;
+    //    CGFloat fullH = self.bounds.size.height;
+    //    CGRect subFrame = self.bounds;
+    //
+    //    [view setFrame:self.bounds];
+    //    [view setNeedsLayout];
+    //
+    //    [_portraitControlView setFrame:self.bounds];
+    //    [_portraitControlView setNeedsLayout];
+    //
+    //    subFrame = _bottomToolView.frame;
+    //    subFrame.size.width = fullW;
+    //    [_bottomToolView setFrame:subFrame];
+    //    [_bottomToolView layoutIfNeeded];
+    
+    
     if (self.controlViewAppeared) {
         [self showControlViewWithAnimated:NO];
     } else {
@@ -496,7 +590,7 @@ static const CGFloat ZFPlayerControlViewAutoFadeOutTimeInterval = 0.25f;
 
 /// 加载失败
 - (void)failBtnClick:(UIButton *)sender {
-    [self.player.currentPlayerManager reloadPlayer];
+    //    [self.player.currentPlayerManager reloadPlayer];
 }
 
 #pragma mark - setter
@@ -506,14 +600,6 @@ static const CGFloat ZFPlayerControlViewAutoFadeOutTimeInterval = 0.25f;
 }
 
 #pragma mark - getter
-
-- (ZFSpeedLoadingView *)activity {
-    if (!_activity) {
-        _activity = [[ZFSpeedLoadingView alloc] init];
-    }
-    return _activity;
-}
-
 
 - (ZFVolumeBrightnessView *)volumeBrightnessView {
     if (!_volumeBrightnessView) {
@@ -607,37 +693,63 @@ static const CGFloat ZFPlayerControlViewAutoFadeOutTimeInterval = 0.25f;
 
 - (void)play {
     self.playOrPauseBtn.selected = YES;
-    [self.player.currentPlayerManager play];
-    
+    self.centerPlayOrPauseBtn.selected = YES;
     [_ivPlay setHidden:self.playOrPauseBtn.isSelected];
+    if (_showBtnMsg) {
+        [_btnMsg setHidden:!self.playOrPauseBtn.isSelected];
+    }
+    
+    [self.player.currentPlayerManager play];
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+    
 }
 
 - (void)pause {
     self.playOrPauseBtn.selected = NO;
+    self.centerPlayOrPauseBtn.selected = NO;
     [self.player.currentPlayerManager pause];
     
     [_ivPlay setHidden:self.playOrPauseBtn.isSelected];
+    if (_showBtnMsg) {
+        [_btnMsg setHidden:!self.playOrPauseBtn.isSelected];
+    }
 }
 
 /// 根据当前播放状态取反
 - (void)playOrPause {
+    
+    BOOL isPlay = self.playOrPauseBtn.isSelected;//[[BSGlobalData sharedInstance] isPlayVideoWithOption];
+    if (!isPlay) {
+        if(_delegate != nil && [_delegate respondsToSelector:@selector(onPlayTouched:)]) {
+            [_delegate onPlayTouched:self];
+            return;
+        }
+    }
+    
+    
     self.playOrPauseBtn.selected = !self.playOrPauseBtn.isSelected;
-    self.playOrPauseBtn.isSelected? [self.player.currentPlayerManager play]: [self.player.currentPlayerManager pause];
-    [_ivPlay setHidden:self.playOrPauseBtn.isSelected];
+    self.centerPlayOrPauseBtn.selected = !self.centerPlayOrPauseBtn.isSelected;
+    
+    self.playOrPauseBtn.isSelected? [self play]: [self pause];
 }
 
 - (void)playBtnSelectedState:(BOOL)selected {
     self.playOrPauseBtn.selected = selected;
     [_ivPlay setHidden:self.playOrPauseBtn.isSelected];
+    if (_showBtnMsg) {
+        [_btnMsg setHidden:!self.playOrPauseBtn.isSelected];
+    }
 }
 
 #pragma mark -
 - (void)showControlView {
     self.bottomToolView.alpha = 1;
+    self.backBtn.alpha = 1;
     self.isShow = YES;
-    self.bottomToolView.y = self.height - self.bottomToolView.height;
+    self.bottomToolView.y = _portraitControlView.height - self.bottomToolView.height;
     self.playOrPauseBtn.alpha = 1;
     self.player.statusBarHidden = NO;
+    self.centerPlayOrPauseBtn.alpha = 1;
 }
 
 - (void)hideControlView {
@@ -646,6 +758,8 @@ static const CGFloat ZFPlayerControlViewAutoFadeOutTimeInterval = 0.25f;
     self.playOrPauseBtn.alpha = 0;
     self.player.statusBarHidden = NO;
     self.bottomToolView.alpha = 0;
+    self.backBtn.alpha = 0;
+    self.centerPlayOrPauseBtn.alpha = 0;
 }
 
 - (BOOL)shouldResponseGestureWithPoint:(CGPoint)point withGestureType:(ZFPlayerGestureType)type touch:(nonnull UITouch *)touch {

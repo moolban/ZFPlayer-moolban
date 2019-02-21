@@ -7,11 +7,11 @@
 //  视频详情页
 
 #import "ZFPlayerDetailViewController.h"
-#import <ZFPlayer/ZFPlayer.h>
-#import <ZFPlayer/ZFAVPlayerManager.h>
-#import <ZFPlayer/ZFIJKPlayerManager.h>
-#import <ZFPlayer/KSMediaPlayerManager.h>
-#import <ZFPlayer/ZFPlayerControlView.h>
+#import <ZFPlayer-moolban/ZFPlayer.h>
+#import <ZFPlayer-moolban/ZFAVPlayerManager.h>
+//#import <ZFPlayer-moolban/ZFIJKPlayerManager.h>
+//#import <ZFPlayer-moolban/KSMediaPlayerManager.h>
+#import <ZFPlayer-moolban/ZFPlayerControlView.h>
 #import "ZFSmallPlayViewController.h"
 #import "UIImageView+ZFCache.h"
 #import "ZFUtilities.h"

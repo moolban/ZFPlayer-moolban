@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @required
 /// Current playerController
-@property (nonatomic, weak) ZFPlayerController *player;
+@property (nonatomic, retain) ZFPlayerController *player;
 
 @optional
 

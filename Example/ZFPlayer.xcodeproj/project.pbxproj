@@ -19,7 +19,7 @@
 		6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
-		63486445210A9A46000F0337 /* ViewVideoPlayerControler.m in Sources */ = {isa = PBXBuildFile; fileRef = 63486444210A9A46000F0337 /* ViewVideoPlayerControler.m */; };
+		63486445210A9A46000F0337 /* ViewVideoPlayerControler.m in Sources */ = {isa = PBXBuildFile; fileRef = 63486444210A9A46000F0337 /* ViewVideoPlayerControler.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		63486447210A9A4F000F0337 /* ViewVideoPlayerControler.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63486446210A9A4F000F0337 /* ViewVideoPlayerControler.xib */; };
 		63486467210A9B8D000F0337 /* sketchVedioBack180724@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 63486449210A9B8D000F0337 /* sketchVedioBack180724@2x.png */; };
 		63486468210A9B8D000F0337 /* sketchScreenFull180302.png in Resources */ = {isa = PBXBuildFile; fileRef = 6348644A210A9B8D000F0337 /* sketchScreenFull180302.png */; };
@@ -57,10 +57,17 @@
 		6348648E210AF029000F0337 /* sketchVedioClose180727@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6348648B210AF028000F0337 /* sketchVedioClose180727@2x.png */; };
 		6348648F210AF029000F0337 /* sketchVedioClose180727.png in Resources */ = {isa = PBXBuildFile; fileRef = 6348648C210AF029000F0337 /* sketchVedioClose180727.png */; };
 		63486490210AF029000F0337 /* sketchVedioClose180727@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6348648D210AF029000F0337 /* sketchVedioClose180727@3x.png */; };
+		63A6C3C6221E348D00D6C202 /* ZFLightTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A6C3B9221E348D00D6C202 /* ZFLightTableViewController.m */; };
+		63A6C3C7221E348D00D6C202 /* ZFAutoPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A6C3BB221E348D00D6C202 /* ZFAutoPlayerViewController.m */; };
+		63A6C3C8221E348D00D6C202 /* ZFNotAutoPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A6C3BC221E348D00D6C202 /* ZFNotAutoPlayViewController.m */; };
+		63A6C3C9221E348D00D6C202 /* ZFMixViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A6C3BF221E348D00D6C202 /* ZFMixViewController.m */; };
+		63A6C3CA221E348D00D6C202 /* ZFTableHeaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A6C3C0221E348D00D6C202 /* ZFTableHeaderViewController.m */; };
+		63A6C3CB221E348D00D6C202 /* ZFSmallPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A6C3C2221E348D00D6C202 /* ZFSmallPlayViewController.m */; };
+		63A6C3CC221E348D00D6C202 /* ZFPlayerDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A6C3C5221E348D00D6C202 /* ZFPlayerDetailViewController.m */; };
+		63A6C3CF221E34C100D6C202 /* ZFTableHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A6C3CD221E34C100D6C202 /* ZFTableHeaderView.m */; };
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
 		80BE2428ECB65735B49B8FC1 /* libPods-ZFPlayer_Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4EDC6B3234B489A216C8825 /* libPods-ZFPlayer_Example.a */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
-		CC112E9A20DBD45E0051EE60 /* ZFMixViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CC112E9920DBD45E0051EE60 /* ZFMixViewController.m */; };
 		CC112E9D20DBD6600051EE60 /* ZFOtherCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CC112E9C20DBD6600051EE60 /* ZFOtherCell.m */; };
 		CC47EB6B20C969EC0040419D /* ZFViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CC47EB6A20C969EC0040419D /* ZFViewController.m */; };
 		CCED248820DBF1950077E02A /* ZFCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CCED248720DBF1950077E02A /* ZFCollectionViewController.m */; };
@@ -71,14 +78,11 @@
 		D209360020B658AE0002C956 /* ZFTableData.m in Sources */ = {isa = PBXBuildFile; fileRef = D20935F520B658AE0002C956 /* ZFTableData.m */; };
 		D209360120B658AE0002C956 /* data.json in Resources */ = {isa = PBXBuildFile; fileRef = D20935F620B658AE0002C956 /* data.json */; };
 		D209360220B658AE0002C956 /* NSString+Size.m in Sources */ = {isa = PBXBuildFile; fileRef = D20935FB20B658AE0002C956 /* NSString+Size.m */; };
-		D209360320B658AE0002C956 /* ZFLightTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D20935FC20B658AE0002C956 /* ZFLightTableViewController.m */; };
 		D209360A20B659190002C956 /* ZFNoramlViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D209360920B659190002C956 /* ZFNoramlViewController.m */; };
 		D209365920B79C1E0002C956 /* ZFKeyboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D209365820B79C1E0002C956 /* ZFKeyboardViewController.m */; };
 		D243FCA020C53F950014F533 /* ZFDouYinViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D243FC9F20C53F950014F533 /* ZFDouYinViewController.m */; };
 		D243FCA320C543D30014F533 /* ZFDouYinCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D243FCA220C543D30014F533 /* ZFDouYinCell.m */; };
 		D2E520B021006F1500EF4AC9 /* ZFCollectionViewListController.m in Sources */ = {isa = PBXBuildFile; fileRef = D2E520AF21006F1500EF4AC9 /* ZFCollectionViewListController.m */; };
-		D2EEFE6320BBB03E0097D6D9 /* ZFNotAutoPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D2EEFE6220BBB03E0097D6D9 /* ZFNotAutoPlayViewController.m */; };
-		D2EEFE6620BBF3890097D6D9 /* ZFSmallPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D2EEFE6520BBF3890097D6D9 /* ZFSmallPlayViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -152,13 +156,27 @@
 		6348648B210AF028000F0337 /* sketchVedioClose180727@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sketchVedioClose180727@2x.png"; sourceTree = "<group>"; };
 		6348648C210AF029000F0337 /* sketchVedioClose180727.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sketchVedioClose180727.png; sourceTree = "<group>"; };
 		6348648D210AF029000F0337 /* sketchVedioClose180727@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sketchVedioClose180727@3x.png"; sourceTree = "<group>"; };
+		63A6C3B8221E348D00D6C202 /* ZFNotAutoPlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZFNotAutoPlayViewController.h; sourceTree = "<group>"; };
+		63A6C3B9221E348D00D6C202 /* ZFLightTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZFLightTableViewController.m; sourceTree = "<group>"; };
+		63A6C3BA221E348D00D6C202 /* ZFTableHeaderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZFTableHeaderViewController.h; sourceTree = "<group>"; };
+		63A6C3BB221E348D00D6C202 /* ZFAutoPlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZFAutoPlayerViewController.m; sourceTree = "<group>"; };
+		63A6C3BC221E348D00D6C202 /* ZFNotAutoPlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZFNotAutoPlayViewController.m; sourceTree = "<group>"; };
+		63A6C3BD221E348D00D6C202 /* ZFSmallPlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZFSmallPlayViewController.h; sourceTree = "<group>"; };
+		63A6C3BE221E348D00D6C202 /* ZFMixViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZFMixViewController.h; sourceTree = "<group>"; };
+		63A6C3BF221E348D00D6C202 /* ZFMixViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZFMixViewController.m; sourceTree = "<group>"; };
+		63A6C3C0221E348D00D6C202 /* ZFTableHeaderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZFTableHeaderViewController.m; sourceTree = "<group>"; };
+		63A6C3C1221E348D00D6C202 /* ZFAutoPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZFAutoPlayerViewController.h; sourceTree = "<group>"; };
+		63A6C3C2221E348D00D6C202 /* ZFSmallPlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZFSmallPlayViewController.m; sourceTree = "<group>"; };
+		63A6C3C3221E348D00D6C202 /* ZFPlayerDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZFPlayerDetailViewController.h; sourceTree = "<group>"; };
+		63A6C3C4221E348D00D6C202 /* ZFLightTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZFLightTableViewController.h; sourceTree = "<group>"; };
+		63A6C3C5221E348D00D6C202 /* ZFPlayerDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZFPlayerDetailViewController.m; sourceTree = "<group>"; };
+		63A6C3CD221E34C100D6C202 /* ZFTableHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZFTableHeaderView.m; sourceTree = "<group>"; };
+		63A6C3CE221E34C100D6C202 /* ZFTableHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZFTableHeaderView.h; sourceTree = "<group>"; };
 		71719F9E1E33DC2100824A3D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7C874D8D2F27E9CDA21BC642 /* ZFPlayer.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = ZFPlayer.podspec; path = ../ZFPlayer.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		880FA6F9C4DCEF2BB4D2644B /* Pods-ZFPlayer_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZFPlayer_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ZFPlayer_Example/Pods-ZFPlayer_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		A4EDC6B3234B489A216C8825 /* libPods-ZFPlayer_Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ZFPlayer_Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CC112E9820DBD45E0051EE60 /* ZFMixViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZFMixViewController.h; sourceTree = "<group>"; };
-		CC112E9920DBD45E0051EE60 /* ZFMixViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZFMixViewController.m; sourceTree = "<group>"; };
 		CC112E9B20DBD6600051EE60 /* ZFOtherCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZFOtherCell.h; sourceTree = "<group>"; };
 		CC112E9C20DBD6600051EE60 /* ZFOtherCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZFOtherCell.m; sourceTree = "<group>"; };
 		CC47EB6920C969EC0040419D /* ZFViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZFViewController.h; sourceTree = "<group>"; };
@@ -171,7 +189,6 @@
 		CCF66D7320C57BE5001B6121 /* ZFDouYinControlView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZFDouYinControlView.m; sourceTree = "<group>"; };
 		D20935F020B658AE0002C956 /* ZFTableViewCellLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZFTableViewCellLayout.m; sourceTree = "<group>"; };
 		D20935F120B658AE0002C956 /* ZFTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZFTableViewCell.m; sourceTree = "<group>"; };
-		D20935F320B658AE0002C956 /* ZFLightTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZFLightTableViewController.h; sourceTree = "<group>"; };
 		D20935F420B658AE0002C956 /* NSString+Size.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Size.h"; sourceTree = "<group>"; };
 		D20935F520B658AE0002C956 /* ZFTableData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZFTableData.m; sourceTree = "<group>"; };
 		D20935F620B658AE0002C956 /* data.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = data.json; sourceTree = "<group>"; };
@@ -179,7 +196,6 @@
 		D20935F920B658AE0002C956 /* ZFTableViewCellLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZFTableViewCellLayout.h; sourceTree = "<group>"; };
 		D20935FA20B658AE0002C956 /* ZFTableData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZFTableData.h; sourceTree = "<group>"; };
 		D20935FB20B658AE0002C956 /* NSString+Size.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Size.m"; sourceTree = "<group>"; };
-		D20935FC20B658AE0002C956 /* ZFLightTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZFLightTableViewController.m; sourceTree = "<group>"; };
 		D209360820B659190002C956 /* ZFNoramlViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZFNoramlViewController.h; sourceTree = "<group>"; };
 		D209360920B659190002C956 /* ZFNoramlViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZFNoramlViewController.m; sourceTree = "<group>"; };
 		D209365720B79C1E0002C956 /* ZFKeyboardViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZFKeyboardViewController.h; sourceTree = "<group>"; };
@@ -190,10 +206,6 @@
 		D243FCA220C543D30014F533 /* ZFDouYinCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZFDouYinCell.m; sourceTree = "<group>"; };
 		D2E520AE21006F1500EF4AC9 /* ZFCollectionViewListController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZFCollectionViewListController.h; sourceTree = "<group>"; };
 		D2E520AF21006F1500EF4AC9 /* ZFCollectionViewListController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZFCollectionViewListController.m; sourceTree = "<group>"; };
-		D2EEFE6120BBB03E0097D6D9 /* ZFNotAutoPlayViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZFNotAutoPlayViewController.h; sourceTree = "<group>"; };
-		D2EEFE6220BBB03E0097D6D9 /* ZFNotAutoPlayViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZFNotAutoPlayViewController.m; sourceTree = "<group>"; };
-		D2EEFE6420BBF3890097D6D9 /* ZFSmallPlayViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZFSmallPlayViewController.h; sourceTree = "<group>"; };
-		D2EEFE6520BBF3890097D6D9 /* ZFSmallPlayViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZFSmallPlayViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -386,14 +398,20 @@
 		CCF66D6E20C57B5A001B6121 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				D2EEFE6120BBB03E0097D6D9 /* ZFNotAutoPlayViewController.h */,
-				D2EEFE6220BBB03E0097D6D9 /* ZFNotAutoPlayViewController.m */,
-				D2EEFE6420BBF3890097D6D9 /* ZFSmallPlayViewController.h */,
-				D2EEFE6520BBF3890097D6D9 /* ZFSmallPlayViewController.m */,
-				D20935F320B658AE0002C956 /* ZFLightTableViewController.h */,
-				D20935FC20B658AE0002C956 /* ZFLightTableViewController.m */,
-				CC112E9820DBD45E0051EE60 /* ZFMixViewController.h */,
-				CC112E9920DBD45E0051EE60 /* ZFMixViewController.m */,
+				63A6C3C1221E348D00D6C202 /* ZFAutoPlayerViewController.h */,
+				63A6C3BB221E348D00D6C202 /* ZFAutoPlayerViewController.m */,
+				63A6C3C4221E348D00D6C202 /* ZFLightTableViewController.h */,
+				63A6C3B9221E348D00D6C202 /* ZFLightTableViewController.m */,
+				63A6C3BE221E348D00D6C202 /* ZFMixViewController.h */,
+				63A6C3BF221E348D00D6C202 /* ZFMixViewController.m */,
+				63A6C3B8221E348D00D6C202 /* ZFNotAutoPlayViewController.h */,
+				63A6C3BC221E348D00D6C202 /* ZFNotAutoPlayViewController.m */,
+				63A6C3C3221E348D00D6C202 /* ZFPlayerDetailViewController.h */,
+				63A6C3C5221E348D00D6C202 /* ZFPlayerDetailViewController.m */,
+				63A6C3BD221E348D00D6C202 /* ZFSmallPlayViewController.h */,
+				63A6C3C2221E348D00D6C202 /* ZFSmallPlayViewController.m */,
+				63A6C3BA221E348D00D6C202 /* ZFTableHeaderViewController.h */,
+				63A6C3C0221E348D00D6C202 /* ZFTableHeaderViewController.m */,
 				D243FC9E20C53F950014F533 /* ZFDouYinViewController.h */,
 				D243FC9F20C53F950014F533 /* ZFDouYinViewController.m */,
 			);
@@ -403,6 +421,8 @@
 		CCF66D6F20C57B79001B6121 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				63A6C3CE221E34C100D6C202 /* ZFTableHeaderView.h */,
+				63A6C3CD221E34C100D6C202 /* ZFTableHeaderView.m */,
 				D20935F820B658AE0002C956 /* ZFTableViewCell.h */,
 				D20935F120B658AE0002C956 /* ZFTableViewCell.m */,
 				CC112E9B20DBD6600051EE60 /* ZFOtherCell.h */,
@@ -658,27 +678,31 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63A6C3CC221E348D00D6C202 /* ZFPlayerDetailViewController.m in Sources */,
 				D20935FE20B658AE0002C956 /* ZFTableViewCell.m in Sources */,
 				63486445210A9A46000F0337 /* ViewVideoPlayerControler.m in Sources */,
 				6003F59E195388D20070C39A /* ZFAppDelegate.m in Sources */,
+				63A6C3CF221E34C100D6C202 /* ZFTableHeaderView.m in Sources */,
 				CCF66D7420C57BE5001B6121 /* ZFDouYinControlView.m in Sources */,
-				D209360320B658AE0002C956 /* ZFLightTableViewController.m in Sources */,
 				D20935FD20B658AE0002C956 /* ZFTableViewCellLayout.m in Sources */,
 				D209360A20B659190002C956 /* ZFNoramlViewController.m in Sources */,
+				63A6C3C6221E348D00D6C202 /* ZFLightTableViewController.m in Sources */,
 				CC112E9D20DBD6600051EE60 /* ZFOtherCell.m in Sources */,
-				D2EEFE6620BBF3890097D6D9 /* ZFSmallPlayViewController.m in Sources */,
+				63A6C3CA221E348D00D6C202 /* ZFTableHeaderViewController.m in Sources */,
 				D209360020B658AE0002C956 /* ZFTableData.m in Sources */,
 				D2E520B021006F1500EF4AC9 /* ZFCollectionViewListController.m in Sources */,
+				63A6C3C7221E348D00D6C202 /* ZFAutoPlayerViewController.m in Sources */,
 				D243FCA320C543D30014F533 /* ZFDouYinCell.m in Sources */,
-				CC112E9A20DBD45E0051EE60 /* ZFMixViewController.m in Sources */,
 				D243FCA020C53F950014F533 /* ZFDouYinViewController.m in Sources */,
+				63A6C3CB221E348D00D6C202 /* ZFSmallPlayViewController.m in Sources */,
 				D209360220B658AE0002C956 /* NSString+Size.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
 				CC47EB6B20C969EC0040419D /* ZFViewController.m in Sources */,
 				D209365920B79C1E0002C956 /* ZFKeyboardViewController.m in Sources */,
 				CCED248B20DBF2740077E02A /* ZFCollectionViewCell.m in Sources */,
-				D2EEFE6320BBB03E0097D6D9 /* ZFNotAutoPlayViewController.m in Sources */,
+				63A6C3C9221E348D00D6C202 /* ZFMixViewController.m in Sources */,
 				CCED248820DBF1950077E02A /* ZFCollectionViewController.m in Sources */,
+				63A6C3C8221E348D00D6C202 /* ZFNotAutoPlayViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

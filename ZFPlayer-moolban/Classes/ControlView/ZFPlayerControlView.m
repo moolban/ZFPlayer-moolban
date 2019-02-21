@@ -39,9 +39,6 @@
 #import "ZFPlayer.h"
 #endif
 
-static const CGFloat ZFPlayerAnimationTimeInterval              = 2.5f;
-static const CGFloat ZFPlayerControlViewAutoFadeOutTimeInterval = 0.25f;
-
 
 @interface ZFPlayerControlView () <ZFSliderViewDelegate>
 /// 竖屏控制层的View

@@ -12,9 +12,20 @@
 #import "ZFPlayerMediaControl.h"
 #import "ZFSpeedLoadingView.h"
 
-@interface ViewVideoPlayerControler : UIView <ZFPlayerMediaControl>
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol ViewVideoPlayerControllerDelgate;
+
+@interface ViewVideoPlayerControler : UIView <ZFPlayerMediaControl>{
+    UIView *view;
+}
+
+@property (assign, nonatomic) id <ViewVideoPlayerControllerDelgate> delegate;
+
+@property (assign) BOOL showBtnMsg;
 // 동영상 여부 표시(정지일때만 표시)
-@property (weak, nonatomic) IBOutlet UIImageView *ivPlay;
+@property (nonatomic, retain) IBOutlet UIImageView *ivPlay;
+@property (retain, nonatomic) IBOutlet UIButton *btnMsg;
 /// 加载loading
 @property (nonatomic, retain) IBOutlet ZFSpeedLoadingView *activity;
 /// 加载失败按钮
@@ -35,8 +46,11 @@
 @property (nonatomic, retain) IBOutlet UIButton *backBtn;
 /// 底部工具栏
 @property (nonatomic, retain) IBOutlet UIView *bottomToolView;
+@property (retain, nonatomic) IBOutlet NSLayoutConstraint *consBottmoToolB;
 /// 播放或暂停按钮
 @property (nonatomic, retain) IBOutlet UIButton *playOrPauseBtn;
+@property (retain, nonatomic) IBOutlet UIButton *centerPlayOrPauseBtn;
+
 /// 播放的当前时间
 @property (nonatomic, retain) IBOutlet UILabel *currentTimeLabel;
 /// 滑杆
@@ -47,8 +61,6 @@
 @property (retain, nonatomic) IBOutlet UIButton *soundBtn;
 /// 全屏按钮
 @property (nonatomic, retain) IBOutlet UIButton *fullScreenBtn;
-/// 播放器
-@property (nonatomic, weak) ZFPlayerController *player;
 /// slider滑动中
 @property (nonatomic, copy, nullable) void(^sliderValueChanging)(CGFloat value,BOOL forward);
 /// slider滑动结束
@@ -71,3 +83,16 @@
 - (void)play;
 - (void)pause;
 @end
+
+
+
+@protocol ViewVideoPlayerControllerDelgate <NSObject>
+
+- (void)onPlayTouched:(ViewVideoPlayerControler *)view;
+
+@end
+
+NS_ASSUME_NONNULL_END
+
+
+
