@@ -1,6 +1,6 @@
 {
   "name": "ZFPlayer-moolban",
-  "version": "3.2.5.1",
+  "version": "3.2.5.2",
   "summary": "A good player made by renzifeng",
   "homepage": "https://github.com/rws08/ZFPlayer-moolban",
   "license": {
@@ -12,11 +12,11 @@
   },
   "source": {
     "git": "https://github.com/rws08/ZFPlayer-moolban.git",
-    "tag": "3.2.5.1"
+    "tag": "3.2.5.2"
   },
   "social_media_url": "http://weibo.com/zifeng1300",
   "platforms": {
-    "ios": "7.0"
+    "ios": "8.0"
   },
   "requires_arc": true,
   "default_subspecs": "Core",
