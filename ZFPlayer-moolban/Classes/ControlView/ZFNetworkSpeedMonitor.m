@@ -23,7 +23,7 @@
 // THE SOFTWARE.
 
 #import "ZFNetworkSpeedMonitor.h"
-#import "ZFPlayerLogManager.h"
+#import <ZFPlayer-moolban/ZFPlayerLogManager.h>
 #include <arpa/inet.h>
 #include <ifaddrs.h>
 #include <net/if.h>

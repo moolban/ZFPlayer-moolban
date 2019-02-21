@@ -45,8 +45,8 @@
     CGFloat min_y = 0;
     CGFloat min_w = 0;
     CGFloat min_h = 0;
-    CGFloat min_view_w = self.width;
-    CGFloat min_view_h = self.height;
+    CGFloat min_view_w = self.zf_width;
+    CGFloat min_view_h = self.zf_height;
     
     min_w = 44;
     min_h = 44;
@@ -59,7 +59,7 @@
     self.playBtn.center = self.center;
     
     min_x = 0;
-    min_y = min_view_h - 1;
+    min_y = min_view_h - 80;
     min_w = min_view_w;
     min_h = 1;
     self.sliderView.frame = CGRectMake(min_x, min_y, min_w, min_h);
@@ -90,10 +90,10 @@
     self.sliderView.value = videoPlayer.progress;
 }
 
-/// 缓冲改变回调
-- (void)videoPlayer:(ZFPlayerController *)videoPlayer bufferTime:(NSTimeInterval)bufferTime {
-    self.sliderView.bufferValue = videoPlayer.bufferProgress;
-}
+///// 缓冲改变回调
+//- (void)videoPlayer:(ZFPlayerController *)videoPlayer bufferTime:(NSTimeInterval)bufferTime {
+//    self.sliderView.bufferValue = videoPlayer.bufferProgress;
+//}
 
 - (void)gestureSingleTapped:(ZFPlayerGestureControl *)gestureControl {
     if (self.player.currentPlayerManager.isPlaying) {
@@ -136,9 +136,9 @@
 - (ZFSliderView *)sliderView {
     if (!_sliderView) {
         _sliderView = [[ZFSliderView alloc] init];
-        _sliderView.maximumTrackTintColor = [UIColor clearColor];
+        _sliderView.maximumTrackTintColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.5];
         _sliderView.minimumTrackTintColor = [UIColor whiteColor];
-        _sliderView.bufferTrackTintColor  = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.5];
+        _sliderView.bufferTrackTintColor  = [UIColor clearColor];
         _sliderView.sliderHeight = 1;
         _sliderView.isHideSliderBlock = NO;
     }
