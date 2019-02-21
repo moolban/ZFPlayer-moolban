@@ -1,15 +1,13 @@
 PODS:
   - FDFullscreenPopGesture (1.1)
   - MJRefresh (3.1.15.7)
-  - ZFPlayer-moolban (3.2.4):
-    - ZFPlayer-moolban/AVPlayer (= 3.2.4)
-    - ZFPlayer-moolban/ControlView (= 3.2.4)
-    - ZFPlayer-moolban/Core (= 3.2.4)
-  - ZFPlayer-moolban/AVPlayer (3.2.4):
+  - ZFPlayer-moolban (3.2.5.1):
+    - ZFPlayer-moolban/Core (= 3.2.5.1)
+  - ZFPlayer-moolban/AVPlayer (3.2.5.1):
     - ZFPlayer-moolban/Core
-  - ZFPlayer-moolban/ControlView (3.2.4):
+  - ZFPlayer-moolban/ControlView (3.2.5.1):
     - ZFPlayer-moolban/Core
-  - ZFPlayer-moolban/Core (3.2.4)
+  - ZFPlayer-moolban/Core (3.2.5.1)
 
 DEPENDENCIES:
   - FDFullscreenPopGesture
@@ -23,20 +21,14 @@ SPEC REPOS:
     - FDFullscreenPopGesture
     - MJRefresh
 
-SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
-    - FDFullscreenPopGesture
-    - MJRefresh
-
 EXTERNAL SOURCES:
   ZFPlayer-moolban:
     :path: "../"
 
 SPEC CHECKSUMS:
   FDFullscreenPopGesture: a8a620179e3d9c40e8e00256dcee1c1a27c6d0f0
-  MJRefresh: b48380ae2b927b46c4ef000de9adb8dc748e1df7
-  ZFPlayer-moolban: 008b99b20407884194432713ac34d86c81a40acd
-
+  MJRefresh: 697f8ec75ebdbe9207767bb682cf0f51b0d8a41f
+  ZFPlayer-moolban: b69e0dc62e92e97850682db3d2ef864f5778b64f
 
 PODFILE CHECKSUM: 0fce149e916b20eedc8e8d7acb7a5770d0f97dbe
 

@@ -192,17 +192,25 @@ static const CGFloat ZFPlayerControlViewAutoFadeOutTimeInterval = 0.25f;
     self.controlViewAppeared = YES;
     [self cancelAutoFadeOutControlView];
     @weakify(self)
-    self.afterBlock = dispatch_block_create(0, ^{
-        @strongify(self)
-        [self hideControlViewWithAnimated:YES];
-    });
+    if (@available(iOS 8.0, *)) {
+        self.afterBlock = dispatch_block_create(0, ^{
+            @strongify(self)
+            [self hideControlViewWithAnimated:YES];
+        });
+    } else {
+        // Fallback on earlier versions
+    }
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.autoHiddenTimeInterval * NSEC_PER_SEC)), dispatch_get_main_queue(),self.afterBlock);
 }
 
 /// 取消延时隐藏controlView的方法
 - (void)cancelAutoFadeOutControlView {
     if (self.afterBlock) {
-        dispatch_block_cancel(self.afterBlock);
+        if (@available(iOS 8.0, *)) {
+            dispatch_block_cancel(self.afterBlock);
+        } else {
+            // Fallback on earlier versions
+        }
         self.afterBlock = nil;
     }
 }

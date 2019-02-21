@@ -201,9 +201,9 @@ static NSString *kVideoCover = nil;
 - (UIImageView *)containerView {
     if (!_containerView) {
         _containerView = [UIImageView new];
-        [_containerView setImageWithURLString:kVideoCover placeholder:[ZFUtilities imageWithColor:[UIColor colorWithRed:220/255.0 green:220/255.0 blue:220/255.0 alpha:1] size:CGSizeMake(1, 1)]];
+        [(UIImageView *)_containerView setImageWithURLString:kVideoCover placeholder:[ZFUtilities imageWithColor:[UIColor colorWithRed:220/255.0 green:220/255.0 blue:220/255.0 alpha:1] size:CGSizeMake(1, 1)]];
     }
-    return _containerView;
+    return (UIImageView *)_containerView;
 }
 
 - (UIButton *)playBtn {

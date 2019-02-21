@@ -1,6 +1,6 @@
 {
   "name": "ZFPlayer-moolban",
-  "version": "3.1.4.1",
+  "version": "3.2.5.1",
   "summary": "A good player made by renzifeng",
   "homepage": "https://github.com/rws08/ZFPlayer-moolban",
   "license": {
@@ -12,7 +12,7 @@
   },
   "source": {
     "git": "https://github.com/rws08/ZFPlayer-moolban.git",
-    "tag": "3.1.4.1"
+    "tag": "3.2.5.1"
   },
   "social_media_url": "http://weibo.com/zifeng1300",
   "platforms": {
@@ -50,38 +50,6 @@
         "ZFPlayer-moolban/Core": [
 
         ]
-      }
-    },
-    {
-      "name": "ijkplayer",
-      "source_files": "ZFPlayer-moolban/Classes/ijkplayer/*.{h,m}",
-      "public_header_files": "ZFPlayer-moolban/Classes/ijkplayer/*.h",
-      "dependencies": {
-        "ZFPlayer-moolban/Core": [
-
-        ],
-        "IJKMediaFramework": [
-
-        ]
-      },
-      "platforms": {
-        "ios": "8.0"
-      }
-    },
-    {
-      "name": "KSYMediaPlayer",
-      "source_files": "ZFPlayer-moolban/Classes/KSYMediaPlayer/*.{h,m}",
-      "public_header_files": "ZFPlayer-moolban/Classes/KSYMediaPlayer/*.h",
-      "dependencies": {
-        "KSYMediaPlayer_iOS": [
-
-        ],
-        "ZFPlayer-moolban/Core": [
-
-        ]
-      },
-      "pod_target_xcconfig": {
-        "ARCHS[sdk=iphonesimulator*]": "$(ARCHS_STANDARD_64_BIT)"
       }
     }
   ]

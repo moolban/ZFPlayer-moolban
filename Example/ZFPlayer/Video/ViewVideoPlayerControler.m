@@ -218,9 +218,9 @@ static const CGFloat ZFPlayerControlViewAutoFadeOutTimeInterval = 0.25f;
 //
 //        } else
         {
-            [_soundBtn setSelected:self.player.currentPlayerManager.isMuted];
-            [_fullScreenBtn setSelected:self.player.isFullScreen];
-            [_backBtn setHidden:!_fullScreenBtn.isSelected];
+            [self->_soundBtn setSelected:self.player.currentPlayerManager.isMuted];
+            [self->_fullScreenBtn setSelected:self.player.isFullScreen];
+            [self->_backBtn setHidden:!self->_fullScreenBtn.isSelected];
             
             if (!self.player.isSmallFloatViewShow) {
                 [self hideControlView];
@@ -239,9 +239,9 @@ static const CGFloat ZFPlayerControlViewAutoFadeOutTimeInterval = 0.25f;
 //
 //        } else
         {
-            [_soundBtn setSelected:self.player.currentPlayerManager.isMuted];
-            [_fullScreenBtn setSelected:self.player.isFullScreen];
-            [_backBtn setHidden:!_fullScreenBtn.isSelected];
+            [self->_soundBtn setSelected:self.player.currentPlayerManager.isMuted];
+            [self->_fullScreenBtn setSelected:self.player.isFullScreen];
+            [self->_backBtn setHidden:!self->_fullScreenBtn.isSelected];
             
             if (!self.player.isSmallFloatViewShow) {
                 [self showControlView];
