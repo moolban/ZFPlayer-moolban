@@ -54,7 +54,7 @@ typedef NS_ENUM(NSInteger, ZFPlayerScalingMode) {
 
 @required
 /// The view must inherited `ZFPlayerView`,this view deals with some gesture conflicts.
-@property (nonatomic) ZFPlayerView *view;
+@property (nonatomic,strong) ZFPlayerView *view;
 
 @optional
 /// The player volume, 0...1.0
@@ -99,7 +99,7 @@ typedef NS_ENUM(NSInteger, ZFPlayerScalingMode) {
 @property (nonatomic, readonly) BOOL isPreparedToPlay;
 
 /// The play asset URL.
-@property (nonatomic) NSURL *assetURL;
+@property (nonatomic, strong) NSURL *assetURL;
 
 /// The video size.
 @property (nonatomic, readonly) CGSize presentationSize;
@@ -162,9 +162,6 @@ typedef NS_ENUM(NSInteger, ZFPlayerScalingMode) {
 
 /// Use this method to seek to a specified time for the current player and to be notified when the seek operation is complete.
 - (void)seekToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler;
-
-/// Replace the current playback URL.
-- (void)replaceCurrentAssetURL:(NSURL *)assetURL __attribute__((deprecated("use the property `assetURL` instead.")));;
 
 @end
 

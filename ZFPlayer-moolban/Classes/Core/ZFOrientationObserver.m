@@ -157,47 +157,27 @@
 
 - (void)enterLandscapeFullScreen:(UIInterfaceOrientation)orientation animated:(BOOL)animated {
     if (self.fullScreenMode == ZFFullScreenModePortrait) return;
+
     _currentOrientation = orientation;
     UIView *superview = nil;
     CGRect frame;
-    if ([self isNeedAdaptiveiOS8Rotation]) {
-        if (UIInterfaceOrientationIsLandscape(orientation)) {
-            if (self.fullScreen) return;
-            superview = self.fullScreenContainerView;
-            self.fullScreen = YES;
-        } else {
-            if (!self.fullScreen) return;
-            if (self.roateType == ZFRotateTypeCell) superview = [self.cell viewWithTag:self.playerViewTag];
-            else superview = self.containerView;
-            self.fullScreen = NO;
-        }
-        if (self.orientationWillChange) self.orientationWillChange(self, self.isFullScreen);
-        [superview addSubview:self.view];
-        [UIView animateWithDuration:animated?self.duration:0 animations:^{
-            self.view.frame = superview.bounds;
-            [self.view layoutIfNeeded];
-            [self interfaceOrientation:orientation];
-        } completion:^(BOOL finished) {
-            if (self.orientationDidChanged) self.orientationDidChanged(self, self.isFullScreen);
-        }];
-        return;
-    }
-    
-    if (UIInterfaceOrientationIsLandscape(orientation)) {
+
+    if (!self.isFullScreen) {
         superview = self.fullScreenContainerView;
         if (!self.isFullScreen) { /// It's not set from the other side of the screen to this side
             self.view.frame = [self.view convertRect:self.view.frame toView:superview];
         }
         self.fullScreen = YES;
         /// 先加到window上，效果更好一些
+        [self.view removeFromSuperview];
         [superview addSubview:_view];
+        [self setConstraint:superview childView:self.view isLandscape:UIInterfaceOrientationIsLandscape(orientation)];
     } else {
         if (self.roateType == ZFRotateTypeCell) superview = [self.cell viewWithTag:self.playerViewTag];
         else superview = self.containerView;
         self.fullScreen = NO;
     }
     frame = [superview convertRect:superview.bounds toView:self.fullScreenContainerView];
-    
     [UIApplication sharedApplication].statusBarOrientation = orientation;
     
     /// 处理8.0系统键盘
@@ -214,19 +194,107 @@
         }
     }
     
-    if (self.orientationWillChange) self.orientationWillChange(self, self.isFullScreen);
+    if (self.orientationWillChange)
+        self.orientationWillChange(self, self.isFullScreen);
+  
+    NSLayoutConstraint *width = [self findViewHeightConstraint:self.view identifier:@"width"];
+    NSLayoutConstraint *height = [self findViewHeightConstraint:self.view identifier:@"height"];
+    
+    if (UIInterfaceOrientationIsLandscape(orientation)) {
+        [width setConstant:frame.size.height];
+        [height setConstant:frame.size.width];
+    } else {
+        [width setConstant:frame.size.width];
+        [height setConstant:frame.size.height];
+    }
+
     [UIView animateWithDuration:animated?self.duration:0 animations:^{
         self.view.transform = [self getTransformRotationAngle:orientation];
-        [UIView animateWithDuration:animated?self.duration:0 animations:^{
-            self.view.frame = frame;
-            [self.view layoutIfNeeded];
-        }];
+        [self.view layoutIfNeeded];
     } completion:^(BOOL finished) {
         [superview addSubview:self.view];
-        self.view.frame = superview.bounds;
+        [self setConstraint:superview childView:self.view isLandscape:UIInterfaceOrientationIsLandscape(orientation)];
         if (self.orientationDidChanged) self.orientationDidChanged(self, self.isFullScreen);
     }];
 }
+
+- (void)setConstraint:(UIView *)parentView childView:(UIView *)childView isLandscape:(BOOL)isLandScape{
+    childView.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    CGFloat padding = 0;
+    if (@available(iOS 11.0, *)) {
+        UIWindow *window = UIApplication.sharedApplication.keyWindow;
+        if (isLandScape) {
+            padding = window.safeAreaInsets.top + window.safeAreaInsets.bottom;
+        }
+        NSLog(@"setConstraint padding %f", padding);
+    }
+    
+    CGFloat width = (isLandScape) ? parentView.frame.size.height : parentView.frame.size.width;
+    CGFloat height = (isLandScape) ? parentView.frame.size.width : parentView.frame.size.height;
+    
+    width -= padding;
+    
+    NSLayoutConstraint *viewWidth = [self findViewHeightConstraint:self.view identifier:@"width"];
+    if ( viewWidth == nil) {
+        NSLayoutConstraint *viewWidth =  [NSLayoutConstraint constraintWithItem:childView
+                                                                      attribute:NSLayoutAttributeWidth
+                                                                      relatedBy:NSLayoutRelationEqual
+                                                                         toItem:nil
+                                                                      attribute:NSLayoutAttributeWidth
+                                                                     multiplier:1
+                                                                       constant:width];
+        viewWidth.identifier = @"width";
+        [childView addConstraint:viewWidth];
+    } else {
+        [viewWidth setConstant:width];
+    }
+    
+    NSLayoutConstraint *viewHeight = [self findViewHeightConstraint:self.view identifier:@"height"];
+    if (viewHeight == nil) {
+        viewHeight =  [NSLayoutConstraint constraintWithItem:childView
+                                                   attribute:NSLayoutAttributeHeight
+                                                   relatedBy:NSLayoutRelationEqual
+                                                      toItem:nil
+                                                   attribute:NSLayoutAttributeHeight
+                                                  multiplier:1
+                                                    constant:height];
+        viewHeight.identifier = @"height";
+        [childView addConstraint:viewHeight];
+    } else {
+        [viewHeight setConstant:height];
+    }
+
+    NSLayoutConstraint *centerX = [NSLayoutConstraint constraintWithItem:childView
+                                                               attribute:NSLayoutAttributeCenterX
+                                                               relatedBy:NSLayoutRelationEqual
+                                                                  toItem:parentView
+                                                               attribute:NSLayoutAttributeCenterX
+                                                              multiplier:1
+                                                                constant:0];
+    
+    NSLayoutConstraint *centerY = [NSLayoutConstraint constraintWithItem:childView
+                                                               attribute:NSLayoutAttributeCenterY
+                                                               relatedBy:NSLayoutRelationEqual
+                                                                  toItem:parentView
+                                                               attribute:NSLayoutAttributeCenterY
+                                                              multiplier:1
+                                                                constant:0];
+    
+    [parentView addConstraints:[NSArray arrayWithObjects:centerX,centerY,nil]];
+}
+
+- (NSLayoutConstraint *) findViewHeightConstraint:(UIView *)view identifier:(NSString *)identifier{
+    NSLayoutConstraint *findConstraint = nil;
+    for(NSLayoutConstraint *cons in view.constraints)   {
+        if ([cons.identifier isEqualToString:identifier]) {
+            findConstraint = cons;
+            break;
+        }
+    }
+    return findConstraint;
+}
+
 
 - (void)interfaceOrientation:(UIInterfaceOrientation)orientation {
     if ([[UIDevice currentDevice] respondsToSelector:@selector(setOrientation:)]) {
@@ -234,7 +302,7 @@
         NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[UIDevice instanceMethodSignatureForSelector:selector]];
         [invocation setSelector:selector];
         [invocation setTarget:[UIDevice currentDevice]];
-        int val = orientation;
+        int val = (int)orientation;
         [invocation setArgument:&val atIndex:2];
         [invocation invoke];
     }
@@ -272,8 +340,8 @@
     UIView *superview = nil;
     if (fullScreen) {
         superview = self.fullScreenContainerView;
-        self.view.frame = [self.view convertRect:self.view.frame toView:superview];
         [superview addSubview:self.view];
+        [self setConstraint:superview childView:self.view isLandscape:NO];
         self.fullScreen = YES;
     } else {
         if (self.roateType == ZFRotateTypeCell) {
@@ -284,13 +352,17 @@
         self.fullScreen = NO;
     }
     if (self.orientationWillChange) self.orientationWillChange(self, self.isFullScreen);
+    
     CGRect frame = [superview convertRect:superview.bounds toView:self.fullScreenContainerView];
+    NSLayoutConstraint *width = [self findViewHeightConstraint:self.view identifier:@"width"];
+    NSLayoutConstraint *height = [self findViewHeightConstraint:self.view identifier:@"height"];
+    [width setConstant:frame.size.width];
+    [height setConstant:frame.size.height];
     [UIView animateWithDuration:animated?self.duration:0 animations:^{
-        self.view.frame = frame;
         [self.view layoutIfNeeded];
     } completion:^(BOOL finished) {
         [superview addSubview:self.view];
-        self.view.frame = superview.bounds;
+        [self setConstraint:superview childView:self.view isLandscape:NO];
         if (self.orientationDidChanged) self.orientationDidChanged(self, self.isFullScreen);
     }];
 }

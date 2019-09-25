@@ -191,13 +191,47 @@
             superview = self.containerView;
         }
         [superview addSubview:self.currentPlayerManager.view];
+        [self setConstraint:superview childView:self.currentPlayerManager.view];
         [self.currentPlayerManager.view addSubview:self.controlView];
-        
-        self.currentPlayerManager.view.frame = superview.bounds;
-        self.currentPlayerManager.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        self.controlView.frame = self.currentPlayerManager.view.bounds;
-        self.controlView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        [self setConstraint:self.currentPlayerManager.view childView:self.controlView];
     }
+}
+
+- (void)setConstraint:(UIView *)parentView childView:(UIView *)childView {
+    childView.translatesAutoresizingMaskIntoConstraints = NO;
+    NSLayoutConstraint *viewWidth =  [NSLayoutConstraint constraintWithItem:childView
+                                                                  attribute:NSLayoutAttributeWidth
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:parentView
+                                                                  attribute:NSLayoutAttributeWidth
+                                                                 multiplier:1
+                                                                   constant:0];
+    
+    NSLayoutConstraint *viewHeight =  [NSLayoutConstraint constraintWithItem:childView
+                                                                   attribute:NSLayoutAttributeHeight
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:parentView
+                                                                   attribute:NSLayoutAttributeHeight
+                                                                  multiplier:1
+                                                                    constant:0];
+    
+    NSLayoutConstraint *centerX = [NSLayoutConstraint constraintWithItem:childView
+                                                               attribute:NSLayoutAttributeCenterX
+                                                               relatedBy:NSLayoutRelationEqual
+                                                                  toItem:parentView
+                                                               attribute:NSLayoutAttributeCenterX
+                                                              multiplier:1
+                                                                constant:0];
+    
+    NSLayoutConstraint *centerY = [NSLayoutConstraint constraintWithItem:childView
+                                                               attribute:NSLayoutAttributeCenterY
+                                                               relatedBy:NSLayoutRelationEqual
+                                                                  toItem:parentView
+                                                               attribute:NSLayoutAttributeCenterY
+                                                              multiplier:1
+                                                                constant:0];
+    
+    [parentView addConstraints:[NSArray arrayWithObjects:viewWidth,viewHeight,centerX,centerY,nil]];
 }
 
 #pragma mark - getter
@@ -796,8 +830,7 @@
         self.containerView = [cell viewWithTag:self.containerViewTag];
     }
     [self.containerView addSubview:self.currentPlayerManager.view];
-    self.currentPlayerManager.view.frame = self.containerView.bounds;
-    self.currentPlayerManager.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self setConstraint:self.containerView childView:self.currentPlayerManager.view];
     [self.orientationObserver cellModelRotateView:self.currentPlayerManager.view rotateViewAtCell:cell playerViewTag:self.containerViewTag];
 }
 
@@ -806,8 +839,7 @@
     self.isSmallFloatViewShow = YES;
     self.smallFloatView.hidden = NO;
     [self.smallFloatView addSubview:self.currentPlayerManager.view];
-    self.currentPlayerManager.view.frame = self.smallFloatView.bounds;
-    self.currentPlayerManager.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self setConstraint:self.smallFloatView childView:self.currentPlayerManager.view];
     [self.orientationObserver cellSmallModelRotateView:self.currentPlayerManager.view containerView:self.smallFloatView];
 }
 

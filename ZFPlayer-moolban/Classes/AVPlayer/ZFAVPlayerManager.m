@@ -188,11 +188,6 @@ static NSString *const kPresentationSize         = @"presentationSize";
     }];
 }
 
-/// Replace the current playback address
-- (void)replaceCurrentAssetURL:(NSURL *)assetURL {
-    self.assetURL = assetURL;
-}
-
 - (void)seekToTime:(NSTimeInterval)time completionHandler:(void (^ __nullable)(BOOL finished))completionHandler {
     CMTime seekTime = CMTimeMake(time, 1); //kCMTimeZero
     [_playerItem cancelPendingSeeks];
