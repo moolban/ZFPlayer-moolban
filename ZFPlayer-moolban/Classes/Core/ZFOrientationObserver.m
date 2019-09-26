@@ -178,7 +178,7 @@
         self.fullScreen = NO;
     }
     frame = [superview convertRect:superview.bounds toView:self.fullScreenContainerView];
-    [UIApplication sharedApplication].statusBarOrientation = orientation;
+//    [UIApplication sharedApplication].statusBarOrientation = orientation;
     
     /// 处理8.0系统键盘
     if (SysVersion >= 8.0 && SysVersion < 9.0) {
@@ -197,15 +197,29 @@
     if (self.orientationWillChange)
         self.orientationWillChange(self, self.isFullScreen);
   
+    CGFloat padding = 0;
+    CGFloat centerYPosition = 0;
+    if (@available(iOS 11.0, *)) {
+      UIWindow *window = UIApplication.sharedApplication.keyWindow;
+      if (UIInterfaceOrientationIsLandscape(orientation) && window.safeAreaInsets.bottom > 0) {
+          padding = window.safeAreaInsets.top + window.safeAreaInsets.bottom;
+          centerYPosition = window.safeAreaInsets.top - window.safeAreaInsets.bottom;
+          centerYPosition = (centerYPosition > 0 ) ? centerYPosition-10:0;
+      }
+    }
+    
     NSLayoutConstraint *width = [self findViewHeightConstraint:self.view identifier:@"width"];
     NSLayoutConstraint *height = [self findViewHeightConstraint:self.view identifier:@"height"];
-    
+    NSLayoutConstraint *centerY = [self findViewHeightConstraint:self.view identifier:@"centerY"];
+
     if (UIInterfaceOrientationIsLandscape(orientation)) {
-        [width setConstant:frame.size.height];
+        [width setConstant:frame.size.height-padding];
         [height setConstant:frame.size.width];
+        [centerY setConstant:centerYPosition];
     } else {
         [width setConstant:frame.size.width];
         [height setConstant:frame.size.height];
+        [centerY setConstant:0];
     }
 
     [UIView animateWithDuration:animated?self.duration:0 animations:^{
@@ -222,20 +236,25 @@
     childView.translatesAutoresizingMaskIntoConstraints = NO;
     
     CGFloat padding = 0;
+    CGFloat centerYPosition = 0;
     if (@available(iOS 11.0, *)) {
-        UIWindow *window = UIApplication.sharedApplication.keyWindow;
-        if (isLandScape) {
-            padding = window.safeAreaInsets.top + window.safeAreaInsets.bottom;
-        }
-        NSLog(@"setConstraint padding %f", padding);
+      UIWindow *window = UIApplication.sharedApplication.keyWindow;
+      if (isLandScape) {
+          padding = window.safeAreaInsets.top + window.safeAreaInsets.bottom;
+          centerYPosition = window.safeAreaInsets.top - window.safeAreaInsets.bottom;
+          centerYPosition = (centerYPosition > 0 ) ? centerYPosition-10:0;
+      }
+        NSLog(@"window.safeAreaInsets.top %lf", window.safeAreaInsets.top);
+        NSLog(@"window.safeAreaInsets.bottom %lf", window.safeAreaInsets.bottom);
     }
     
     CGFloat width = (isLandScape) ? parentView.frame.size.height : parentView.frame.size.width;
     CGFloat height = (isLandScape) ? parentView.frame.size.width : parentView.frame.size.height;
-    
+
     width -= padding;
-    
+
     NSLayoutConstraint *viewWidth = [self findViewHeightConstraint:self.view identifier:@"width"];
+    
     if ( viewWidth == nil) {
         NSLayoutConstraint *viewWidth =  [NSLayoutConstraint constraintWithItem:childView
                                                                       attribute:NSLayoutAttributeWidth
@@ -265,23 +284,36 @@
         [viewHeight setConstant:height];
     }
 
-    NSLayoutConstraint *centerX = [NSLayoutConstraint constraintWithItem:childView
-                                                               attribute:NSLayoutAttributeCenterX
-                                                               relatedBy:NSLayoutRelationEqual
-                                                                  toItem:parentView
-                                                               attribute:NSLayoutAttributeCenterX
-                                                              multiplier:1
-                                                                constant:0];
+    NSLayoutConstraint *centerX = [self findViewHeightConstraint:parentView identifier:@"centerX"];
     
-    NSLayoutConstraint *centerY = [NSLayoutConstraint constraintWithItem:childView
-                                                               attribute:NSLayoutAttributeCenterY
-                                                               relatedBy:NSLayoutRelationEqual
-                                                                  toItem:parentView
-                                                               attribute:NSLayoutAttributeCenterY
-                                                              multiplier:1
-                                                                constant:0];
+    if (centerX == nil) {
+        centerX = [NSLayoutConstraint constraintWithItem:childView
+                                              attribute:NSLayoutAttributeCenterX
+                                              relatedBy:NSLayoutRelationEqual
+                                                 toItem:parentView
+                                              attribute:NSLayoutAttributeCenterX
+                                             multiplier:1
+                                               constant:0];
+        centerX.identifier = @"centerX";
+        [parentView addConstraint:centerX];
+    }
+   
     
-    [parentView addConstraints:[NSArray arrayWithObjects:centerX,centerY,nil]];
+    NSLayoutConstraint *centerY = [self findViewHeightConstraint:parentView identifier:@"centerY"];
+    if (centerY == nil) {
+        centerY = [NSLayoutConstraint constraintWithItem:childView
+                                  attribute:NSLayoutAttributeCenterY
+                                  relatedBy:NSLayoutRelationEqual
+                                     toItem:parentView
+                                  attribute:NSLayoutAttributeCenterY
+                                 multiplier:1
+                                   constant:centerYPosition];
+        centerY.identifier = @"centerY";
+        [parentView addConstraint:centerY];
+    } else {
+        [centerY setConstant:centerYPosition];
+    }
+    
 }
 
 - (NSLayoutConstraint *) findViewHeightConstraint:(UIView *)view identifier:(NSString *)identifier{

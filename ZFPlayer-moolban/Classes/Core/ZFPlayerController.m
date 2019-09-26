@@ -31,6 +31,7 @@
 #import "ZFReachabilityManager.h"
 #import "ZFPlayer.h"
 
+
 @interface ZFPlayerController ()
 
 @property (nonatomic, strong) UIView *containerView;
@@ -191,47 +192,54 @@
             superview = self.containerView;
         }
         [superview addSubview:self.currentPlayerManager.view];
-        [self setConstraint:superview childView:self.currentPlayerManager.view];
+        if (@available(iOS 9.0, *)) {
+            [self setConstraint:superview childView:self.currentPlayerManager.view];
+        } else {
+            // Fallback on earlier versions
+        }
         [self.currentPlayerManager.view addSubview:self.controlView];
-        [self setConstraint:self.currentPlayerManager.view childView:self.controlView];
+        if (@available(iOS 9.0, *)) {
+            [self setConstraint:self.currentPlayerManager.view childView:self.controlView];
+        } else {
+            // Fallback on earlier versions
+        }
     }
 }
 
-- (void)setConstraint:(UIView *)parentView childView:(UIView *)childView {
+- (NSLayoutYAxisAnchor *)safeTopAnchor:(UIView *)view  API_AVAILABLE(ios(9.0)){
+    if (@available(iOS 11.0, *)) {
+        return view.safeAreaLayoutGuide.topAnchor;
+    }
+    return view.topAnchor;
+}
+
+- (NSLayoutYAxisAnchor *)safeBottomAnchor:(UIView *)view   API_AVAILABLE(ios(9.0)){
+  if (@available(iOS 11.0, *)) {
+       return view.safeAreaLayoutGuide.bottomAnchor;
+   }
+   return view.bottomAnchor;
+}
+
+- (NSLayoutXAxisAnchor *)safeLeadingAnchor:(UIView *)view   API_AVAILABLE(ios(9.0)){
+    if (@available(iOS 11.0, *)) {
+        return view.safeAreaLayoutGuide.leadingAnchor;
+    }
+    return view.leadingAnchor;
+}
+
+- (NSLayoutXAxisAnchor *)safeTrallingAnchor:(UIView *)view   API_AVAILABLE(ios(9.0)){
+    if (@available(iOS 11.0, *)) {
+         return view.safeAreaLayoutGuide.trailingAnchor;
+     }
+     return view.trailingAnchor;
+}
+
+- (void)setConstraint:(UIView *)parentView childView:(UIView *)childView API_AVAILABLE(ios(9.0)){
     childView.translatesAutoresizingMaskIntoConstraints = NO;
-    NSLayoutConstraint *viewWidth =  [NSLayoutConstraint constraintWithItem:childView
-                                                                  attribute:NSLayoutAttributeWidth
-                                                                  relatedBy:NSLayoutRelationEqual
-                                                                     toItem:parentView
-                                                                  attribute:NSLayoutAttributeWidth
-                                                                 multiplier:1
-                                                                   constant:0];
-    
-    NSLayoutConstraint *viewHeight =  [NSLayoutConstraint constraintWithItem:childView
-                                                                   attribute:NSLayoutAttributeHeight
-                                                                   relatedBy:NSLayoutRelationEqual
-                                                                      toItem:parentView
-                                                                   attribute:NSLayoutAttributeHeight
-                                                                  multiplier:1
-                                                                    constant:0];
-    
-    NSLayoutConstraint *centerX = [NSLayoutConstraint constraintWithItem:childView
-                                                               attribute:NSLayoutAttributeCenterX
-                                                               relatedBy:NSLayoutRelationEqual
-                                                                  toItem:parentView
-                                                               attribute:NSLayoutAttributeCenterX
-                                                              multiplier:1
-                                                                constant:0];
-    
-    NSLayoutConstraint *centerY = [NSLayoutConstraint constraintWithItem:childView
-                                                               attribute:NSLayoutAttributeCenterY
-                                                               relatedBy:NSLayoutRelationEqual
-                                                                  toItem:parentView
-                                                               attribute:NSLayoutAttributeCenterY
-                                                              multiplier:1
-                                                                constant:0];
-    
-    [parentView addConstraints:[NSArray arrayWithObjects:viewWidth,viewHeight,centerX,centerY,nil]];
+    [[childView.topAnchor constraintEqualToAnchor:parentView.topAnchor] setActive:true];
+    [[childView.bottomAnchor constraintEqualToAnchor:parentView.bottomAnchor] setActive:true];
+    [[childView.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor] setActive:true];
+    [[childView.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor] setActive:true];
 }
 
 #pragma mark - getter
@@ -830,7 +838,11 @@
         self.containerView = [cell viewWithTag:self.containerViewTag];
     }
     [self.containerView addSubview:self.currentPlayerManager.view];
-    [self setConstraint:self.containerView childView:self.currentPlayerManager.view];
+    if (@available(iOS 9.0, *)) {
+        [self setConstraint:self.containerView childView:self.currentPlayerManager.view];
+    } else {
+        // Fallback on earlier versions
+    }
     [self.orientationObserver cellModelRotateView:self.currentPlayerManager.view rotateViewAtCell:cell playerViewTag:self.containerViewTag];
 }
 
@@ -839,7 +851,11 @@
     self.isSmallFloatViewShow = YES;
     self.smallFloatView.hidden = NO;
     [self.smallFloatView addSubview:self.currentPlayerManager.view];
-    [self setConstraint:self.smallFloatView childView:self.currentPlayerManager.view];
+    if (@available(iOS 9.0, *)) {
+        [self setConstraint:self.smallFloatView childView:self.currentPlayerManager.view];
+    } else {
+        // Fallback on earlier versions
+    }
     [self.orientationObserver cellSmallModelRotateView:self.currentPlayerManager.view containerView:self.smallFloatView];
 }
 
